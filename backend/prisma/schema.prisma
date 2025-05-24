@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+//output   = "../generated/prisma"
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  firebase_uid        String           @id
+  email               String           @unique
+  nombre              String
+  proyectosOwned      Proyecto[]       @relation("ProyectosCreados")
+  proyectosCompartidos MiembroProyecto[]
+  asignaciones        AsignacionTarea[]
+}
+
+model Proyecto {
+  id                  Int              @id @default(autoincrement())
+  titulo              String
+  descripcion         String
+  objetivo_general    String
+  ownerId             String
+  owner               Usuario          @relation("ProyectosCreados", fields: [ownerId], references: [firebase_uid])
+  objetivosEspecificos ObjetivoEspecifico[]
+  tareas              Tarea[]
+  miembros            MiembroProyecto[]
+}
+
+model MiembroProyecto {
+  usuarioId  String
+  proyectoId Int
+  rol        String
+
+  usuario   Usuario  @relation(fields: [usuarioId], references: [firebase_uid])
+  proyecto  Proyecto @relation(fields: [proyectoId], references: [id])
+
+  @@id([usuarioId, proyectoId])
+}
+
+model ObjetivoEspecifico {
+  id         Int      @id @default(autoincrement())
+  descripcion String
+  orden       Int
+  proyectoId  Int
+  proyecto    Proyecto @relation(fields: [proyectoId], references: [id])
+}
+
+model Tarea {
+  id           Int               @id @default(autoincrement())
+  nombre       String
+  fecha_inicio DateTime
+  fecha_fin    DateTime
+  presupuesto  Decimal
+  proyectoId   Int
+  parentId     Int?              // Tarea padre opcional
+  metadata     Json
+
+  proyecto     Proyecto          @relation(fields: [proyectoId], references: [id])
+  parent       Tarea?            @relation("Subtareas", fields: [parentId], references: [id])
+  subtareas    Tarea[]           @relation("Subtareas")
+  asignaciones AsignacionTarea[]
+}
+
+model AsignacionTarea {
+  tareaId          Int
+  usuarioId        String
+  fecha_asignacion DateTime
+
+  tarea   Tarea   @relation(fields: [tareaId], references: [id])
+  usuario Usuario @relation(fields: [usuarioId], references: [firebase_uid])
+
+  @@id([tareaId, usuarioId])
+}
