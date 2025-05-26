@@ -18,7 +18,7 @@ const Home = () => {
 
         <h1>PLANNING TOOL</h1>
         <div className="horizontal-line"></div>
-        <p className="subtitle">TUS PROYECTOS PUEDEN CAMBIAR EL MUNDO</p>
+        <p className="subtitle">¿PUEDEN TUS PROYECTOS CAMBIAR EL MUNDO?</p>
 
         <div className="home-actions">
           <button aria-label="Add new project" onClick={() => setShowModal(true)}>
