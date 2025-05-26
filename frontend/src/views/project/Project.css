@@ -1,0 +1,44 @@
+.project-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.project-sidebar {
+  width: 250px;
+  background: #f4f4f4;
+  padding: 1rem;
+  border-right: 1px solid #ddd;
+}
+
+.project-main {
+  flex: 1;
+  padding: 2rem;
+}
+
+.project-owner {
+  font-style: italic;
+  color: #555;
+  margin-bottom: 2rem;
+}
+
+.project-section {
+  margin-bottom: 2rem;
+}
+
+.collaborators-box {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.collaborator {
+  background: #eee;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+}
+
+.project-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}

@@ -16,24 +16,26 @@ datasource db {
 }
 
 model Usuario {
-  firebase_uid        String           @id
-  email               String           @unique
-  nombre              String
-  proyectosOwned      Proyecto[]       @relation("ProyectosCreados")
+  firebase_uid         String            @id
+  email                String            @unique
+  nombre               String
+  proyectosOwned       Proyecto[]        @relation("ProyectosCreados")
   proyectosCompartidos MiembroProyecto[]
-  asignaciones        AsignacionTarea[]
+  AsignacionTarea      AsignacionTarea[]
 }
 
 model Proyecto {
-  id                  Int              @id @default(autoincrement())
-  titulo              String
-  descripcion         String
-  objetivo_general    String
-  ownerId             String
-  owner               Usuario          @relation("ProyectosCreados", fields: [ownerId], references: [firebase_uid])
-  objetivosEspecificos ObjetivoEspecifico[]
-  tareas              Tarea[]
-  miembros            MiembroProyecto[]
+  id                 Int                  @id @default(autoincrement())
+  titulo             String
+  descripcion        String?
+  objetivo_general   String?
+  fecha_inicio       DateTime
+  fecha_fin          DateTime
+  ownerId            String?
+  owner              Usuario?             @relation("ProyectosCreados", fields: [ownerId], references: [firebase_uid])
+  miembros           MiembroProyecto[]
+  ObjetivoEspecifico ObjetivoEspecifico[]
+  Tarea              Tarea[]
 }
 
 model MiembroProyecto {
@@ -41,14 +43,14 @@ model MiembroProyecto {
   proyectoId Int
   rol        String
 
-  usuario   Usuario  @relation(fields: [usuarioId], references: [firebase_uid])
-  proyecto  Proyecto @relation(fields: [proyectoId], references: [id])
+  usuario  Usuario  @relation(fields: [usuarioId], references: [firebase_uid])
+  proyecto Proyecto @relation(fields: [proyectoId], references: [id])
 
   @@id([usuarioId, proyectoId])
 }
 
 model ObjetivoEspecifico {
-  id         Int      @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   descripcion String
   orden       Int
   proyectoId  Int
@@ -56,13 +58,13 @@ model ObjetivoEspecifico {
 }
 
 model Tarea {
-  id           Int               @id @default(autoincrement())
+  id           Int      @id @default(autoincrement())
   nombre       String
   fecha_inicio DateTime
   fecha_fin    DateTime
   presupuesto  Decimal
   proyectoId   Int
-  parentId     Int?              // Tarea padre opcional
+  parentId     Int? // Tarea padre opcional
   metadata     Json
 
   proyecto     Proyecto          @relation(fields: [proyectoId], references: [id])

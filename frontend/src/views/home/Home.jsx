@@ -4,17 +4,20 @@ import Hud from "../../components/hud/Hud";
 import Footer from "../../components/footer/Footer";
 import NewProjectModal from "../../components/modal/NewProjectModal";
 
-const Home = () => {
+const Home = ({ onProjectCreated }) => {
   const [showModal, setShowModal] = useState(false);
 
   return (
     <div className="home-container">
       <div className="home-center">
-        
         <div className="hud-background-element">
           <Hud />
         </div>
-        <NewProjectModal visible={showModal} onClose={() => setShowModal(false)} />
+        <NewProjectModal
+          visible={showModal}
+          onClose={() => setShowModal(false)}
+          onProjectCreated={onProjectCreated}
+        />
 
         <h1>PLANNING TOOL</h1>
         <div className="horizontal-line"></div>
@@ -29,7 +32,6 @@ const Home = () => {
           </button>
         </div>
       </div>
-
       <Footer />
     </div>
   );
