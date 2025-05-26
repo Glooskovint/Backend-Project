@@ -1,0 +1,108 @@
+.hud-container {
+  position: relative;
+  width: 800px; /* Ajusta el tamaño según sea necesario */
+  height: 800px; /* Ajusta el tamaño según sea necesario */;
+  z-index: 10; /* Asegura que el contenedor esté por encima del fondo si es necesario */
+}
+
+/* Base styling for rings */
+.hud-container > div {
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  box-sizing: border-box;
+  z-index: 0; /* Esto posiciona los anillos detrás del texto */
+}
+
+/* Segmented Ring */
+.segmented-ring {
+  width: 60%;
+  height: 60%;
+  background: conic-gradient(
+    #333333 0deg 50deg, transparent 50deg 60deg,
+    #333333 60deg 110deg, transparent 110deg 120deg,
+    #333333 120deg 170deg, transparent 170deg 180deg,
+    #333333 180deg 230deg, transparent 230deg 240deg,
+    #333333 240deg 290deg, transparent 290deg 300deg,
+    #333333 300deg 350deg, transparent 350deg 360deg
+  );
+  animation: rotate-slow 60s linear infinite;
+}
+
+.segmented-ring::after {
+  content: '';
+  position: absolute;
+  inset: 16%;
+  background: var(--bg-color);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* Fine Ticks */
+.fine-ticks-ring {
+  width: 70%;
+  height: 70%;
+  background: repeating-conic-gradient(
+    #cccccc 0deg 0.4deg, transparent 0.4deg 2deg
+  );
+  animation: rotate-slow 30s linear infinite;
+}
+
+.fine-ticks-ring::after {
+  content: '';
+  position: absolute;
+  inset: 5%;
+  background: var(--bg-color);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* Outer Ticks */
+.outer-ticks-ring {
+  width: 80%;
+  height: 80%;
+  background-image:
+    repeating-conic-gradient(#555555 -2deg 2deg, transparent 2deg calc(45deg - 2deg)),
+    repeating-conic-gradient(#888888 -0.25deg 0.25deg, transparent 0.25deg calc(5deg - 0.25deg));
+  animation: rotate-slow 10s linear infinite;
+}
+
+.outer-ticks-ring::after {
+  content: '';
+  position: absolute;
+  inset: 4%;
+  background: var(--bg-color);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* Outermost Elements */
+.outermost-elements {
+  width: 90%;
+  height: 90%;
+  background: repeating-conic-gradient(
+    #bbbbbb 0deg 1deg, transparent 1deg 12deg
+  );
+}
+
+.outermost-elements::after {
+  content: '';
+  position: absolute;
+  inset: 2%;
+  background: var(--bg-color);
+  border-radius: 50%;
+  z-index: -1;
+}
+
+/* Animations */
+@keyframes rotate-slow {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes rotate-slow-reverse {
+  from { transform: translate(-50%, -50%) rotate(360deg); }
+  to   { transform: translate(-50%, -50%) rotate(0deg); }
+}
