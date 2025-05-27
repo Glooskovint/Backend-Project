@@ -1,19 +1,15 @@
-import "./Footer.css";
+import './Footer.css';
+import AuthButton from '../auth/AuthButton';
 
-const Footer = () => {
-  return (
-    <footer>
-      <div className="footer-left">
-        <i className="fas fa-th-large"></i> Temas
-      </div>
-      <div className="footer-right">
-        Login
-        <button aria-label="User profile">
-          <i className="fas fa-user"></i>
-        </button>
-      </div>
-    </footer>
-  );
-};
+const Footer = () => (
+  <footer>
+    <div className="footer-left">
+      <i className="fas fa-th-large"></i> Temas
+    </div>
+    <div className="footer-right">
+      <AuthButton />
+    </div>
+  </footer>
+);
 
 export default Footer;
