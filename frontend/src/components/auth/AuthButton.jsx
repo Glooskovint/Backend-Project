@@ -1,15 +1,15 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import Login from './Login';
 
 export default function AuthButton() {
-  const { user, logout } = useAuth();
+  const { user, userData, logout } = useAuth();
   const [showLogin, setShowLogin] = useState(false);
 
   if (user) {
     return (
       <button onClick={() => logout()}>
-        Logout ({user.email})
+        Logout ({userData?.nombre || user.email})
       </button>
     );
   }

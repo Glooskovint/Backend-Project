@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useAuth } from "../../hooks/useAuth";
 import "./Modal.css";
 
 export default function NewProjectModal({ visible, onClose, onProjectCreated }) {
+  const { user } = useAuth();
   const [titulo, setTitulo] = useState("");
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
@@ -10,26 +12,30 @@ export default function NewProjectModal({ visible, onClose, onProjectCreated }) 
     e.preventDefault();
 
     try {
+      const body = {
+        titulo,
+        fecha_inicio: new Date(fechaInicio).toISOString(),
+        fecha_fin: new Date(fechaFin).toISOString(),
+      };
+
+      // Si hay usuario logueado, enviamos ownerId
+      if (user && user.uid) {
+        body.ownerId = user.uid;
+      }
+
       const response = await fetch("http://localhost:5000/proyectos", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          titulo,
-          fecha_inicio: new Date(fechaInicio).toISOString(),
-          fecha_fin: new Date(fechaFin).toISOString()
-        })
+        body: JSON.stringify(body)
       });
 
       if (!response.ok) throw new Error("Error al crear el proyecto");
 
       const data = await response.json();
-      setTitulo("");
-      setFechaInicio("");
-      setFechaFin("");
+      onProjectCreated && onProjectCreated(data.id);
       onClose();
-      onProjectCreated(data.id); // Notifica a App.jsx para mostrar Project.jsx
     } catch (err) {
       console.error(err.message);
     }

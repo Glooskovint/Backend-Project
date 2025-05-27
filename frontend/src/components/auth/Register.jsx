@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import Register from './Register';
 //import './Login.css';
 
-export default function Login({ visible, onClose }) {
-  const { login } = useAuth();
+export default function Register({ visible, onClose }) {
+  const { register } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [nombre, setNombre] = useState('');
   const [error, setError] = useState(null);
-  const [showRegister, setShowRegister] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(email, password);
+      await register(email, password, nombre);
       onClose();
     } catch (err) {
       setError(err.message);
@@ -24,9 +23,16 @@ export default function Login({ visible, onClose }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <h2>Login</h2>
+        <h2>Register</h2>
         {error && <p className="error">{error}</p>}
         <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Nombre"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            required
+          />
           <input
             type="email"
             placeholder="Email"
@@ -41,12 +47,8 @@ export default function Login({ visible, onClose }) {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">Login</button>
+          <button type="submit">Register</button>
         </form>
-        <p onClick={() => setShowRegister(true)} className="toggle">
-          Don't have an account? Register
-        </p>
-        <Register visible={showRegister} onClose={() => setShowRegister(false)} />
       </div>
     </div>
   );

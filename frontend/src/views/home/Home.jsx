@@ -25,10 +25,13 @@ const Home = ({ onProjectCreated }) => {
 
         <div className="home-actions">
           <button aria-label="Add new project" onClick={() => setShowModal(true)}>
-            <i className="fas fa-file-alt"></i>
+            <i className="fas fa-folder-plus"></i>
           </button>
           <button aria-label="Link projects">
             <i className="fas fa-link"></i>
+          </button>
+          <button aria-label="My projects">
+            <i className="fas fa-folder"></i>
           </button>
         </div>
       </div>
