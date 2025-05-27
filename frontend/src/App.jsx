@@ -8,7 +8,7 @@ function App() {
   const [currentProjectId, setCurrentProjectId] = useState(null);
 
   const handleProjectCreated = (projectId) => {
-    setCurrentProjectId(projectId);
+    setCurrentProjectId(projectId)
     setCurrentView('project');
   };
 

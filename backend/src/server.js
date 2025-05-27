@@ -50,25 +50,6 @@ app.get('/proyectos', async (req, res) => {
   }
 });
 
-app.get('/proyectos/:id', async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const proyecto = await prisma.proyecto.findUnique({
-      where: { id: parseInt(id) }
-    });
-
-    if (!proyecto) {
-      return res.status(404).json({ error: 'Proyecto no encontrado' });
-    }
-
-    res.json(proyecto);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message || 'Error al obtener el proyecto' });
-  }
-});
-
 app.post('/proyectos', async (req, res) => {
   const {
     titulo,
@@ -99,6 +80,25 @@ app.post('/proyectos', async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Error al crear el proyecto' });
   }
+});
+
+app.get('/proyectos/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const proyecto = await prisma.proyecto.findUnique({
+      where: { id: parseInt(id) }
+    });
+
+    if (!proyecto) {
+      return res.status(404).json({ error: 'Proyecto no encontrado' });
+    }
+
+    res.json(proyecto);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message || 'Error al obtener el proyecto' });
+  }
 });
 
 app.patch('/proyectos/:id', async (req, res) => {

@@ -22,7 +22,7 @@ services:
       DATABASE_URL: "postgresql://postgres:postgres@db:5432/mi_base?schema=public"
     depends_on:
       - db
-    command: sh -c "while ! nc -z db 5432; do sleep 1; done; npx prisma generate && npx prisma migrate deploy && node src/server.js"
+    command: sh -c "while ! nc -z db 5432; do sleep 1; done; npx prisma migrate reset --force && npx prisma generate && node src/server.js"
 
   frontend:
     image: node:23
