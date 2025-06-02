@@ -148,10 +148,51 @@ app.get('/tareas', async (req, res) => {
 });
 
 app.post('/tareas', async (req, res) => {
-  const { proyectoId, asignacionTareaId, titulo, descripcion } = req.body;
-  const tarea = await prisma.tarea.create({ data: { proyectoId, asignacionTareaId, titulo, descripcion } });
-  res.json(tarea);
+  const { proyectoId, parentId, nombre, fecha_inicio, fecha_fin, presupuesto } = req.body;
+  
+  try {
+    const tarea = await prisma.tarea.create({ 
+      data: {
+        proyectoId: parseInt(proyectoId),
+        parentId: parentId ? parseInt(parentId) : null,
+        nombre,
+        fecha_inicio: new Date(fecha_inicio),
+        fecha_fin: new Date(fecha_fin),
+        presupuesto: parseFloat(presupuesto) || 0
+      }
+    });
+    res.json(tarea);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al crear tarea' });
+  }
 });
+
+// plus para las tareas: Obtener tareas por proyecto (con jerarquía)
+app.get('/proyectos/:id/tareas', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const tareas = await prisma.tarea.findMany({
+      where: { proyectoId: parseInt(id) },
+      include: { subtareas: true, asignaciones: true }
+    });
+    res.json(buildHierarchy(tareas));
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener tareas' });
+  }
+});
+
+// plus para las tareas: Función para construir jerarquía
+function buildHierarchy(tareas) {
+  const map = {};
+  const roots = [];
+  tareas.forEach(tarea => {
+    map[tarea.id] = { ...tarea, subtareas: [] };
+    if (!tarea.parentId) roots.push(map[tarea.id]);
+    else map[tarea.parentId].subtareas.push(map[tarea.id]);
+  });
+  return roots;
+}
 
 // --- Rutas para AsignacionTarea ---
 app.get('/asignaciones', async (req, res) => {
