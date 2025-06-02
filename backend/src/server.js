@@ -97,8 +97,8 @@ app.get('/proyectos/:id', async (req, res) => {
     res.json(proyecto);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: error.message || 'Error al obtener el proyecto' });
-  }
+    res.status(500).json({ error: error.message || 'Error al obtener el proyecto' });
+  }
 });
 
 app.patch('/proyectos/:id', async (req, res) => {
@@ -149,16 +149,20 @@ app.get('/tareas', async (req, res) => {
 
 app.post('/tareas', async (req, res) => {
   const { proyectoId, parentId, nombre, fecha_inicio, fecha_fin, presupuesto } = req.body;
-  
+
   try {
-    const tarea = await prisma.tarea.create({ 
+    const tarea = await prisma.tarea.create({
       data: {
         proyectoId: parseInt(proyectoId),
         parentId: parentId ? parseInt(parentId) : null,
         nombre,
         fecha_inicio: new Date(fecha_inicio),
         fecha_fin: new Date(fecha_fin),
-        presupuesto: parseFloat(presupuesto) || 0
+        presupuesto: parseFloat(presupuesto) || 0,
+        metadata: {} // Valor por defecto para metadata
+      },
+      include: {
+        subtareas: true // Incluir subtareas en la respuesta
       }
     });
     res.json(tarea);
