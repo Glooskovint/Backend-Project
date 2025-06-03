@@ -140,6 +140,21 @@ header {
   width: 30%;
 }
 
+.colaboradores-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 0.5rem;
+}
+
+.colaborador-item {
+  background: #f0f0f0;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
 .resumen {
   width: 70%;
 }

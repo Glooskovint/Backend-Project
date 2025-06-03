@@ -18,16 +18,48 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+
       if (currentUser) {
-        const res = await fetch(`http://localhost:5000/usuarios`);
-        const allUsers = await res.json();
-        const matched = allUsers.find(
-          (u) => u.firebase_uid === currentUser.uid
+        // 1) Intentamos obtenerlo de nuestra BD
+        let response = await fetch(
+          `http://localhost:5000/usuarios?firebase_uid=${currentUser.uid}`
         );
-        setUserData(matched);
+        let usuarioEnDB = null;
+
+        if (response.status === 200) {
+          const data = await response.json();
+          // Si el backend devuelve un array vacío o un 404, no existe aún
+          if (Array.isArray(data) ? data.length === 0 : data.error) {
+            usuarioEnDB = null;
+          } else {
+            usuarioEnDB = Array.isArray(data) ? data[0] : data;
+          }
+        }
+
+        // 2) Si no existe, lo creamos
+        if (!usuarioEnDB) {
+          await fetch("http://localhost:5000/usuarios", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              firebase_uid: currentUser.uid,
+              email: currentUser.email,
+              nombre: currentUser.displayName || "",
+            }),
+          });
+          // Volvemos a obtenerlo de la BD
+          response = await fetch(
+            `http://localhost:5000/usuarios?firebase_uid=${currentUser.uid}`
+          );
+          const newData = await response.json();
+          usuarioEnDB = Array.isArray(newData) ? newData[0] : newData;
+        }
+
+        setUserData(usuarioEnDB);
       } else {
         setUserData(null);
       }
+
       setLoading(false);
     });
     return unsubscribe;

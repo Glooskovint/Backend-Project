@@ -276,7 +276,20 @@ const Project = ({ projectId }) => {
               <h3>
                 <i class="fas fa-users"></i> Colaboradores
               </h3>
-              {/*Todos los colaboradores */}
+              {project.miembros && project.miembros.length > 0 ? (
+                <ul className="colaboradores-list">
+                  {project.miembros.map((m) => (
+                    <li
+                      key={`${m.usuarioId}-${m.proyectoId}`}
+                      className="colaborador-item"
+                    >
+                      {m.usuario?.nombre || m.usuarioId}{" "}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No hay colaboradores aún.</p>
+              )}
             </section>
 
             <section class="resumen">

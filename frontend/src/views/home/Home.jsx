@@ -3,9 +3,11 @@ import "./Home.css";
 import Hud from "../../components/hud/Hud";
 import Footer from "../../components/footer/Footer";
 import NewProjectModal from "../../components/modal/NewProjectModal";
+import JoinProjectModal from "../../components/join-modal/JoinProjectModal";
 
 const Home = ({ onProjectCreated }) => {
-  const [showModal, setShowModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
 
   return (
     <div className="home-container">
@@ -13,10 +15,16 @@ const Home = ({ onProjectCreated }) => {
         <div className="hud-background-element">
           <Hud />
         </div>
+
         <NewProjectModal
-          visible={showModal}
-          onClose={() => setShowModal(false)}
+          visible={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
           onProjectCreated={onProjectCreated}
+        />
+        <JoinProjectModal
+          visible={showJoinModal}
+          onClose={() => setShowJoinModal(false)}
+          onJoined={() => alert("Redirigir a la vista del proyecto si se desea")}
         />
 
         <h1>PLANNING TOOL</h1>
@@ -24,10 +32,10 @@ const Home = ({ onProjectCreated }) => {
         <p className="subtitle">¿PUEDEN TUS PROYECTOS CAMBIAR EL MUNDO?</p>
 
         <div className="home-actions">
-          <button aria-label="Add new project" onClick={() => setShowModal(true)}>
+          <button aria-label="Add new project" onClick={() => setShowCreateModal(true)}>
             <i className="fas fa-file-alt"></i>
           </button>
-          <button aria-label="Link projects">
+          <button aria-label="Link projects" onClick={() => setShowJoinModal(true)}>
             <i className="fas fa-link"></i>
           </button>
         </div>

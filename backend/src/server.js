@@ -13,17 +13,26 @@ app.get('/', (req, res) => {
 
 // --- Rutas para Usuario ---
 app.get('/usuarios', async (req, res) => {
+  const { firebase_uid } = req.query;
+  if (firebase_uid) {
+    // obtener un solo usuario por firebase_uid
+    const usuario = await prisma.usuario.findUnique({
+      where: { firebase_uid }
+    });
+    return usuario
+      ? res.json(usuario)
+      : res.status(404).json({ error: 'Usuario no encontrado' });
+  }
+  // sin query devuelve todos
   const usuarios = await prisma.usuario.findMany();
   res.json(usuarios);
 });
 
 app.post('/usuarios', async (req, res) => {
   const { firebase_uid, email, nombre } = req.body;
-
   if (!firebase_uid || !email || !nombre) {
     return res.status(400).json({ error: 'Faltan campos obligatorios' });
   }
-
   try {
     const usuario = await prisma.usuario.create({
       data: { firebase_uid, email, nombre }
@@ -38,10 +47,10 @@ app.post('/usuarios', async (req, res) => {
 // --- Rutas para Proyecto ---
 app.get('/proyectos', async (req, res) => {
   const { ownerId } = req.query;
-
   try {
     const proyectos = await prisma.proyecto.findMany({
-      where: ownerId ? { ownerId } : undefined
+      where: ownerId ? { ownerId } : undefined,
+      include: { owner: true }  // <— Incluimos el owner aquí
     });
     res.json(proyectos);
   } catch (error) {
@@ -50,50 +59,23 @@ app.get('/proyectos', async (req, res) => {
   }
 });
 
-app.post('/proyectos', async (req, res) => {
-  const {
-    titulo,
-    fecha_inicio,
-    fecha_fin,
-    descripcion,
-    objetivo_general,
-    ownerId,
-  } = req.body;
-
-  if (!titulo || !fecha_inicio || !fecha_fin) {
-    return res.status(400).json({ error: 'Faltan campos obligatorios: titulo, fecha_inicio, fecha_fin' });
-  }
-
-  try {
-    const proyecto = await prisma.proyecto.create({
-      data: {
-        titulo,
-        descripcion: descripcion || '',
-        objetivo_general: objetivo_general || '',
-        fecha_inicio: new Date(fecha_inicio),
-        fecha_fin: new Date(fecha_fin),
-        ownerId: ownerId || null,
-      },
-    });
-    res.json(proyecto);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al crear el proyecto' });
-  }
-});
-
 app.get('/proyectos/:id', async (req, res) => {
   const { id } = req.params;
-
   try {
     const proyecto = await prisma.proyecto.findUnique({
-      where: { id: parseInt(id) }
+      where: { id: parseInt(id) },
+      include: {
+        owner: true,
+        miembros: {
+          include: {
+            usuario: true
+          }
+        }
+      }
     });
-
     if (!proyecto) {
       return res.status(404).json({ error: 'Proyecto no encontrado' });
     }
-
     res.json(proyecto);
   } catch (error) {
     console.error(error);
@@ -101,20 +83,79 @@ app.get('/proyectos/:id', async (req, res) => {
   }
 });
 
+app.post('/proyectos', async (req, res) => {
+  const { titulo, fecha_inicio, fecha_fin, descripcion, objetivo_general, ownerId } = req.body;
+
+  if (!titulo || !fecha_inicio || !fecha_fin) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios: titulo, fecha_inicio, fecha_fin' });
+  }
+
+  try {
+    const dataToCreate = {
+      titulo,
+      descripcion: descripcion || '',
+      objetivo_general: objetivo_general || '',
+      fecha_inicio: new Date(fecha_inicio),
+      fecha_fin: new Date(fecha_fin)
+    };
+    if (ownerId && ownerId.trim() !== '') {
+      dataToCreate.ownerId = ownerId;
+    }
+
+    const proyecto = await prisma.proyecto.create({
+      data: dataToCreate,
+      include: { owner: true }
+    });
+
+    res.json(proyecto);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al crear el proyecto' });
+  }
+});
+
 app.patch('/proyectos/:id', async (req, res) => {
   const { id } = req.params;
   const data = req.body;
-
   try {
     const proyecto = await prisma.proyecto.update({
       where: { id: parseInt(id) },
       data,
+      include: { owner: true },
     });
     res.json(proyecto);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al actualizar el proyecto' });
   }
+});
+
+// --- Unirse a Proyecto ---
+
+app.post("/proyectos/unirse", async (req, res) => {
+  const { codigo } = req.body; // puede ser un ID o código
+  const firebase_uid = req.headers.authorization; // o como lo estés manejando
+
+  const user = await prisma.usuario.findUnique({
+    where: { firebase_uid },
+  });
+
+  const proyecto = await prisma.proyecto.findUnique({
+    where: { id: parseInt(codigo) }, // ajustar si es código
+  });
+
+  if (!proyecto) return res.status(404).json({ message: "Proyecto no encontrado" });
+
+  await prisma.proyecto.update({
+    where: { id: proyecto.id },
+    data: {
+      usuarios: {
+        connect: { id: user.id },
+      },
+    },
+  });
+
+  res.json({ message: "Te uniste al proyecto" });
 });
 
 // --- Rutas para MiembroProyecto ---
@@ -125,8 +166,15 @@ app.get('/miembros', async (req, res) => {
 
 app.post('/miembros', async (req, res) => {
   const { usuarioId, proyectoId, rol } = req.body;
-  const miembro = await prisma.miembroProyecto.create({ data: { usuarioId, proyectoId, rol } });
-  res.json(miembro);
+  try {
+    const miembro = await prisma.miembroProyecto.create({
+      data: { usuarioId, proyectoId, rol }
+    });
+    res.json(miembro);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al unir al proyecto' });
+  }
 });
 
 // --- Rutas para ObjetivoEspecifico ---

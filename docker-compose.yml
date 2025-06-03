@@ -1,7 +1,6 @@
 services:
   db:
     image: postgres:15
-    restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -14,8 +13,8 @@ services:
   backend:
     build: ./backend
     volumes:
-      - ./backend:/app      
-      - /app/node_modules     
+      - ./backend:/app
+      - /app/node_modules
     ports:
       - "5000:5000"
     environment:
