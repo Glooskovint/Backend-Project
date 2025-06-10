@@ -18,6 +18,7 @@
 
 # production
 /frontend/build
+/frontend/firebase/config.json
 
 # misc
 /frontend/.DS_Store

@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { AuthProvider } from './contexts/AuthContext';
-import Home from './views/home/Home';
-import Project from './views/project/Project';
+import { AuthProvider } from './features/auth/AuthContext';
+import Home from './pages/home/HomePage';
+import Project from './pages/project/ProjectPage';
 
 function App() {
   const [currentView, setCurrentView] = useState('home');
