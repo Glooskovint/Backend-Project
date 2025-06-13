@@ -1,65 +1,46 @@
-const TaskService = require('../services/task.service');
+const taskService = require('../services/task.service');
 
-const getAll = async (req, res) => {
-    try {
-        const tareas = await TaskService.getAllTasks();
-        res.json(tareas);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+exports.getAll = async (req, res) => {
+  try {
+    const tareas = await taskService.getAll();
+    res.json(tareas);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener tareas' });
+  }
 };
 
-const getById = async (req, res) => {
-    try {
-        const tarea = await TaskService.getTaskById(Number(req.params.id));
-        if (!tarea) return res.status(404).json({ error: 'Tarea no encontrada' });
-        res.json(tarea);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+exports.create = async (req, res) => {
+  try {
+    const nuevaTarea = await taskService.create(req.body);
+    res.json(nuevaTarea);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al crear tarea' });
+  }
 };
 
-const getByProject = async (req, res) => {
-    try {
-        const tareas = await TaskService.getTasksByProject(Number(req.params.pid));
-        res.json(tareas);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+exports.update = async (req, res) => {
+  try {
+    const tareaActualizada = await taskService.update(parseInt(req.params.id), req.body);
+    res.json(tareaActualizada);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al actualizar la tarea' });
+  }
 };
 
-const create = async (req, res) => {
-    try {
-        const nuevaTarea = await TaskService.createTask(req.body);
-        res.status(201).json(nuevaTarea);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
+exports.remove = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const eliminado = await taskService.remove(id);
+    if (eliminado) {
+      res.json({ message: 'Tarea eliminada exitosamente' });
+    } else {
+      res.status(404).json({ error: 'Tarea no encontrada' });
     }
-};
-
-const update = async (req, res) => {
-    try {
-        const tarea = await TaskService.updateTask(Number(req.params.id), req.body);
-        res.json(tarea);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-};
-
-const remove = async (req, res) => {
-    try {
-        await TaskService.deleteTask(Number(req.params.id));
-        res.json({ message: 'Tarea eliminada' });
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-};
-
-module.exports = {
-    getAll,
-    getById,
-    getByProject,
-    create,
-    update,
-    remove,
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al eliminar la tarea' });
+  }
 };

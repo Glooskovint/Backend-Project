@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const ProjectController = require('../controllers/project.controller');
+const projectController = require('../controllers/project.controller');
+const validateBody = require('../middlewares/validateBody');
+const { createProjectSchema } = require('../validators/project.schema');
 
-router.get('/', ProjectController.getAll);
-router.get('/:id', ProjectController.getById);
-router.get('/usuario/:uid', ProjectController.getByUser);
-router.post('/', ProjectController.create);
-router.patch('/:id', ProjectController.update);
-router.delete('/:id', ProjectController.remove);
+router.get('/', projectController.getAll);
+router.get('/:id', projectController.getById);
+router.post('/', validateBody(createProjectSchema), projectController.create);
+router.patch('/:id', projectController.update);
 
 module.exports = router;

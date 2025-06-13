@@ -1,27 +1,64 @@
-const TaskRepo = require('../repositories/task.repository');
+const prisma = require('../utils/db');
 
-const getAllTasks = () => TaskRepo.getAll();
-
-const getTaskById = (id) => TaskRepo.getById(id);
-
-const getTasksByProject = (proyecto_id) => TaskRepo.getByProject(proyecto_id);
-
-const createTask = async (data) => {
-    if (!data.proyecto_id || !data.titulo) {
-        throw new Error('proyecto_id y título son obligatorios');
-    }
-    return await TaskRepo.create(data);
+exports.getAll = async () => {
+  return await prisma.tarea.findMany();
 };
 
-const updateTask = (id, data) => TaskRepo.update(id, data);
+exports.create = async (data) => {
+  const {
+    proyectoId,
+    parentId,
+    nombre,
+    fecha_inicio,
+    fecha_fin,
+    presupuesto,
+  } = data;
 
-const deleteTask = (id) => TaskRepo.remove(id);
+  return await prisma.tarea.create({
+    data: {
+      proyectoId: parseInt(proyectoId),
+      parentId: parentId ? parseInt(parentId) : null,
+      nombre,
+      fecha_inicio: new Date(fecha_inicio),
+      fecha_fin: new Date(fecha_fin),
+      presupuesto: parseFloat(presupuesto) || 0,
+      metadata: {},
+    },
+    include: {
+      subtareas: true,
+    },
+  });
+};
 
-module.exports = {
-    getAllTasks,
-    getTaskById,
-    getTasksByProject,
-    createTask,
-    updateTask,
-    deleteTask,
+exports.update = async (id, data) => {
+  const {
+    nombre,
+    fecha_inicio,
+    fecha_fin,
+    presupuesto,
+    parentId,
+    metadata,
+  } = data;
+
+  return await prisma.tarea.update({
+    where: { id },
+    data: {
+      nombre,
+      fecha_inicio: fecha_inicio ? new Date(fecha_inicio) : undefined,
+      fecha_fin: fecha_fin ? new Date(fecha_fin) : undefined,
+      presupuesto: presupuesto !== undefined ? parseFloat(presupuesto) : undefined,
+      parentId: parentId !== undefined ? parseInt(parentId) : undefined,
+      metadata: metadata !== undefined ? metadata : undefined,
+    },
+    include: {
+      subtareas: true,
+    },
+  });
+};
+
+exports.remove = async (id) => {
+  const tarea = await prisma.tarea.findUnique({ where: { id } });
+  if (!tarea) return null;
+  await prisma.tarea.delete({ where: { id } });
+  return true;
 };

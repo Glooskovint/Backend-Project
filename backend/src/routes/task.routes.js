@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const TaskController = require('../controllers/task.controller');
+const taskController = require('../controllers/task.controller');
+const validateBody = require('../middlewares/validateBody');
+const { createTaskSchema } = require('../validators/task.schema');
 
-router.get('/', TaskController.getAll);
-router.get('/:id', TaskController.getById);
-router.get('/proyecto/:pid', TaskController.getByProject);
-router.post('/', TaskController.create);
-router.patch('/:id', TaskController.update);
-router.delete('/:id', TaskController.remove);
+router.get('/', taskController.getAll);
+router.post('/', validateBody(createTaskSchema), taskController.create);
+router.patch('/:id', taskController.update);
+router.delete('/:id', taskController.remove);
+//router.get('/proyecto/:id', taskController.getByProject);
 
 module.exports = router;

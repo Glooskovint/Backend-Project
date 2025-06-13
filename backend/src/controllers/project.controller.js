@@ -1,65 +1,55 @@
-const ProjectService = require('../services/project.service');
+const projectService = require('../services/project.service');
 
-const getAll = async (req, res) => {
+exports.getAll = async (req, res) => {
     try {
-        const proyectos = await ProjectService.getAllProjects();
+        const { ownerId } = req.query;
+        const proyectos = await projectService.getAll(ownerId);
         res.json(proyectos);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al obtener proyectos' });
     }
 };
 
-const getById = async (req, res) => {
+exports.getById = async (req, res) => {
     try {
-        const proyecto = await ProjectService.getProjectById(Number(req.params.id));
+        const proyecto = await projectService.getById(parseInt(req.params.id));
         if (!proyecto) return res.status(404).json({ error: 'Proyecto no encontrado' });
         res.json(proyecto);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al obtener el proyecto' });
     }
 };
 
-const getByUser = async (req, res) => {
+exports.create = async (req, res) => {
     try {
-        const proyectos = await ProjectService.getProjectsByUser(req.params.uid);
-        res.json(proyectos);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
-
-const create = async (req, res) => {
-    try {
-        const nuevoProyecto = await ProjectService.createProject(req.body);
-        res.status(201).json(nuevoProyecto);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-};
-
-const update = async (req, res) => {
-    try {
-        const proyecto = await ProjectService.updateProject(Number(req.params.id), req.body);
+        const data = req.body;
+        const proyecto = await projectService.create(data);
         res.json(proyecto);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al crear el proyecto' });
     }
 };
 
-const remove = async (req, res) => {
+exports.update = async (req, res) => {
     try {
-        await ProjectService.deleteProject(Number(req.params.id));
-        res.json({ message: 'Proyecto eliminado' });
-    } catch (err) {
-        res.status(400).json({ error: err.message });
+        const id = parseInt(req.params.id);
+        const proyecto = await projectService.update(id, req.body);
+        res.json(proyecto);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al actualizar el proyecto' });
     }
 };
 
-module.exports = {
-    getAll,
-    getById,
-    getByUser,
-    create,
-    update,
-    remove
+exports.getTareasByProyectoId = async (req, res) => {
+    try {
+        const tareas = await projectService.getTareasByProyectoId(parseInt(req.params.id));
+        res.json(tareas);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al obtener tareas' });
+    }
 };
