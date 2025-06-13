@@ -22,6 +22,16 @@ exports.getById = async (req, res) => {
     }
 };
 
+exports.getMiembros = async (req, res) => {
+  try {
+    const miembros = await projectService.getMiembros(parseInt(req.params.id));
+    res.json(miembros);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error al obtener los miembros' });
+  }
+};
+
 exports.create = async (req, res) => {
     try {
         const data = req.body;

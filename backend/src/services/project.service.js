@@ -50,6 +50,15 @@ exports.getTareasByProyectoId = async (proyectoId) => {
     return buildHierarchy(tareas);
 };
 
+exports.getMiembros = async (proyectoId) => {
+  return await prisma.miembroProyecto.findMany({
+    where: { proyectoId },
+    include: {
+      usuario: true, // Incluye datos del usuario relacionado
+    },
+  });
+};
+
 // Función para construir jerarquía de tareas
 function buildHierarchy(tareas) {
     const map = {};
