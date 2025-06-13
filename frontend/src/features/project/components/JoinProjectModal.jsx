@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../../auth/hooks/useAuth";
-import "../styles/ModalProject.module.css";
+import styles from "../styles/ModalProject.module.css";
 
 export default function JoinProjectModal({ visible, onClose, onJoined }) {
   const { user } = useAuth();
@@ -40,8 +40,8 @@ export default function JoinProjectModal({ visible, onClose, onJoined }) {
 
   if (!visible) return null;
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div className={styles["modal-overlay"]} onClick={onClose}>
+      <div className={styles["modal-content"]} onClick={(e) => e.stopPropagation()}>
         <h2>Unirse a Proyecto</h2>
         <input
           type="text"

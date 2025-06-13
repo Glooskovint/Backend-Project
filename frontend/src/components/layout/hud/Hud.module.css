@@ -1,7 +1,7 @@
 .hud-container {
   position: relative;
-  width: 800px; /* Ajusta el tamaño según sea necesario */
-  height: 800px; /* Ajusta el tamaño según sea necesario */;
+  width: 500px; /* Ajusta el tamaño según sea necesario */
+  height: 500px; /* Ajusta el tamaño según sea necesario */;
   z-index: 10; /* Asegura que el contenedor esté por encima del fondo si es necesario */
 }
 

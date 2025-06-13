@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
+import React, { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
+import styles from "../styles/Auth.module.css";
 
 export default function Register({ visible, onClose }) {
   const { register } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [nombre, setNombre] = useState("");
   const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
@@ -20,10 +21,20 @@ export default function Register({ visible, onClose }) {
 
   if (!visible) return null;
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div className={styles["modal-overlay"]} onClick={onClose}>
+      <div
+        className={styles["modal-content"]}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          className={styles["close-button"]}
+          onClick={onClose}
+          type="button"
+        >
+          ×
+        </button>
         <h2>Register</h2>
-        {error && <p className="error">{error}</p>}
+        {error && <p className={styles["error"]}>{error}</p>}
         <form onSubmit={handleSubmit}>
           <input
             type="text"

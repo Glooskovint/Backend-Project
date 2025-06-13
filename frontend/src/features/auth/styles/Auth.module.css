@@ -1,0 +1,117 @@
+/* Modal base overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent dark overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(6px);
+}
+
+/* Glass-style modal content */
+.modal-content {
+  background: rgba(255, 255, 255, 0.7); /* Slightly see-through white */
+  border-radius: 16px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 400px;
+  color: var(--text-color);
+  border: 1px solid var(--gray-light);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  animation: fadeIn 0.3s ease;
+}
+
+/* Modal heading */
+.modal-content h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+/* Error message */
+.error {
+  color: #b00020;
+  background-color: rgba(255, 0, 0, 0.05);
+  border: 1px solid #ffcccc;
+  padding: 0.5rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Form styles */
+.modal-content form {
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content input {
+  font-family: inherit;
+  font-size: 1rem;
+  padding: 0.6em 1em;
+  margin-bottom: 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--gray-dark);
+  background-color: var(--gray-light);
+  color: var(--text-color);
+}
+
+.modal-content input::placeholder {
+  color: #666666;
+}
+
+.modal-content button {
+  background-color: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--gray-dark);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.modal-content button:hover {
+  background-color: var(--gray-dark);
+  color: var(--bg-color);
+}
+
+/* Toggle link ("Don't have an account?") */
+.toggle {
+  margin-top: 1rem;
+  text-align: center;
+  color: #646cff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.toggle:hover {
+  color: #535bf2;
+}
+
+.close-button {
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  color: var(--gray-dark);
+  cursor: pointer;
+  transition: color 0.2s ease;
+  line-height: 1;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

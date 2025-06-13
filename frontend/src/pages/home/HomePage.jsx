@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./Home.module.css";
+import styles from "./Home.module.css";
 import Hud from "../../components/layout/hud/Hud";
 import Footer from "../../components/layout/footer/Footer";
 import NewProjectModal from "../../features/project/components/NewProjectModal";
@@ -10,9 +10,9 @@ const Home = ({ onProjectCreated }) => {
   const [showJoinModal, setShowJoinModal] = useState(false);
 
   return (
-    <div className="home-container">
-      <div className="home-center">
-        <div className="hud-background-element">
+    <div className={styles["home-container"]}>
+      <div className={styles["home-center"]}>
+        <div className={styles["hud-background-element"]}>
           <Hud />
         </div>
 
@@ -28,10 +28,10 @@ const Home = ({ onProjectCreated }) => {
         />
 
         <h1>PLANNING TOOL</h1>
-        <div className="horizontal-line"></div>
-        <p className="subtitle">¿PUEDEN TUS PROYECTOS CAMBIAR EL MUNDO?</p>
+        <div className={styles["horizontal-line"]}></div>
+        <p className={styles["subtitle"]}>¿PUEDEN TUS PROYECTOS CAMBIAR EL MUNDO?</p>
 
-        <div className="home-actions">
+        <div className={styles["home-actions"]}>
           <button aria-label="Add new project" onClick={() => setShowCreateModal(true)}>
             <i className="fas fa-file-alt"></i>
           </button>

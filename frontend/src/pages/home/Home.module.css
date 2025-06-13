@@ -24,7 +24,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  opacity: 0.65; /* 70% de opacidad */
+  opacity: 0.95; /* 70% de opacidad */
   z-index: -1; /* detrás del texto */
   pointer-events: none; /* evita que interfiera con clics o interacciones */
 }

@@ -3,10 +3,10 @@ import AuthButton from '../../../features/auth/components/AuthButton';
 
 const Footer = () => (
   <footer>
-    <div className="footer-left">
-      <i className="fas fa-th-large"></i> Temas
+    <div className="{style.footer-left}">
+      <i className="{style.fas fa-th-large}"></i> Temas
     </div>
-    <div className="footer-right">
+    <div className="{style.footer-right}">
       <AuthButton />
     </div>
   </footer>

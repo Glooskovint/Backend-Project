@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
-import "./Project.module.css";
+import styles from "./Project.module.css";
 import Footer from "../../components/layout/footer/Footer";
 import ModalProject from "../../features/project/components/ProjectCard";
 
@@ -199,7 +199,7 @@ const Project = ({ projectId }) => {
             <span>TOOL</span>
           </h2>
           <div class="separator"></div>
-          <div className="home-actions">
+          <div className={styles["home-actions"]} >
             <button aria-label="Add new project">
               <i className="fas fa-file-alt"></i>
             </button>
