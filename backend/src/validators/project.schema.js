@@ -13,6 +13,11 @@ const createProjectSchema = z.object({
   ownerId: z.string().optional(),
 });
 
+const joinProjectSchema = z.object({
+  userId: z.string().min(1, 'userId requerido'),
+});
+
 module.exports = {
   createProjectSchema,
+  joinProjectSchema,
 };

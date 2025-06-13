@@ -1,3 +1,4 @@
+const { generateInviteToken } = require('../utils/token');
 const prisma = require('../utils/db');
 
 // Devuelve todos los proyectos, con filtro opcional por ownerId
@@ -65,3 +66,49 @@ function buildHierarchy(tareas) {
     });
     return roots;
 }
+
+exports.getOrCreateInviteToken = async (id) => {
+    const proyecto = await prisma.proyecto.findUnique({ where: { id } });
+
+    if (!proyecto) throw new Error('Proyecto no encontrado');
+
+    if (proyecto.inviteToken) return proyecto.inviteToken;
+
+    const newToken = generateInviteToken();
+
+    await prisma.proyecto.update({
+        where: { id },
+        data: { inviteToken: newToken },
+    });
+
+    return newToken;
+};
+
+exports.joinUserByToken = async (token, userId) => {
+    const proyecto = await prisma.proyecto.findFirst({
+        where: { inviteToken: token },
+    });
+
+    if (!proyecto) throw new Error('Token inválido o proyecto no encontrado');
+
+    // Verificamos si ya está registrado
+    const yaEsMiembro = await prisma.miembroProyecto.findFirst({
+        where: {
+            proyectoId: proyecto.id,
+            usuarioId: userId,
+        },
+    });
+
+    if (yaEsMiembro) throw new Error('Ya eres miembro de este proyecto');
+
+    // Añadir nuevo miembro
+    await prisma.miembroProyecto.create({
+        data: {
+            proyectoId: proyecto.id,
+            usuarioId: userId,
+            rol: 'miembro', // Asignar rol por defecto
+        },
+    });
+
+    return proyecto;
+};

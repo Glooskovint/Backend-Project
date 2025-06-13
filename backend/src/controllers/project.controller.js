@@ -53,3 +53,27 @@ exports.getTareasByProyectoId = async (req, res) => {
         res.status(500).json({ error: 'Error al obtener tareas' });
     }
 };
+
+exports.getInviteLink = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const token = await projectService.getOrCreateInviteToken(parseInt(id));
+        res.json({ token });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al obtener el token de invitación' });
+    }
+};
+
+exports.joinByInvite = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const { userId } = req.body;
+
+        const proyecto = await projectService.joinUserByToken(token, userId);
+        res.json({ mensaje: 'Unido con éxito', proyecto });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ error: error.message });
+    }
+};

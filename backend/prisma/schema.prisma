@@ -36,6 +36,7 @@ model Proyecto {
   miembros           MiembroProyecto[]
   ObjetivoEspecifico ObjetivoEspecifico[]
   Tarea              Tarea[]
+  inviteToken        String?              @unique
 }
 
 model MiembroProyecto {
