@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { jsPDF } from "jspdf";
 import styles from "./Project.module.css";
 import Footer from "../../components/layout/footer/Footer";
-import ModalProject from "../../features/project/components/ProjectCard";
+import ModalProject from "../../features/project/components/TableProjectModal";
 
 const Project = ({ projectId }) => {
   const [project, setProject] = useState(null);
@@ -185,21 +185,21 @@ const Project = ({ projectId }) => {
 
   return (
     <>
-      <div class="container">
+      <div class={styles["container"]}>
         <ModalProject
           visible={showModal}
           onClose={() => setShowModal(false)}
           projectId={projectId}
         />
 
-        <aside class="sidebar">
+        <aside class={styles["sidebar"]}>
           <h2>
             PLANNING
             <br />
             <span>TOOL</span>
           </h2>
-          <div class="separator"></div>
-          <div className={styles["home-actions"]} >
+          <div class={styles["separator"]}></div>
+          <div className={styles["home-actions"]}>
             <button aria-label="Add new project">
               <i className="fas fa-file-alt"></i>
             </button>
@@ -207,7 +207,7 @@ const Project = ({ projectId }) => {
               <i className="fas fa-link"></i>
             </button>
           </div>
-          <ul class="project-list">
+          <ul class={styles["project-list"]}>
             <li>
               <button>
                 <i class="fas fa-folder"></i> Proyecto 1
@@ -246,13 +246,13 @@ const Project = ({ projectId }) => {
           </ul>
         </aside>
 
-        <main class="main-content">
+        <main class={styles["main-content"]}>
           <header>
             <h1>
               <i class="fas fa-link"></i> {project.titulo}
             </h1>
             <p>creado por {project.owner?.nombre || "Desconocido"}</p>
-            <div class="date-row">
+            <div class={styles["date-row"]}>
               <span>{getDate(date, -4)}.</span>
               <span>{getDate(date, -3)}.</span>
               <span>{getDate(date, -2)}.</span>
@@ -263,23 +263,23 @@ const Project = ({ projectId }) => {
               <span>{getDate(date, 3)}.</span>
               <span>{getDate(date, 4)}.</span>
             </div>
-            <div class="selected-date-info">
+            <div class={styles["selected-date-info"]}>
               <i class="fas fa-caret-up"></i>
               <span>INICIO DEL PROYECTO</span>
             </div>
           </header>
 
-          <div class="project-body">
-            <section class="colaboradores">
+          <div class={styles["project-body"]}>
+            <section class={styles["colaboradores"]}>
               <h3>
                 <i class="fas fa-users"></i> Colaboradores
               </h3>
               {project.miembros && project.miembros.length > 0 ? (
-                <ul className="colaboradores-list">
+                <ul className={styles["colaboradores-list"]}>
                   {project.miembros.map((m) => (
                     <li
                       key={`${m.usuarioId}-${m.proyectoId}`}
-                      className="colaborador-item"
+                      className={styles["colaborador-item"]}
                     >
                       {m.usuario?.nombre || m.usuarioId}{" "}
                     </li>
@@ -290,21 +290,21 @@ const Project = ({ projectId }) => {
               )}
             </section>
 
-            <section class="resumen">
+            <section class={styles["resumen"]}>
               <h3>
                 <i class="fas fa-file"></i> Resumen del Proyecto
               </h3>
-              <div class="descripcion">
+              <div class={styles["descripcion"]}>
                 <input
+                  placeholder="Breve descripción del proyecto"
                   type="text"
                   class="input-value"
                   value={descripcion}
                   onChange={(e) => setDescripcion(e.target.value)}
-                  placeholder="Descripción "
                 />
               </div>
-              <div class="objetivos">
-                <div class="objetivo-general">
+              <div class={styles["objetivos"]}>
+                <div class={styles["objetivo-general"]}>
                   <input
                     type="text"
                     class="input-value"
@@ -313,8 +313,8 @@ const Project = ({ projectId }) => {
                     placeholder="Objetivo general"
                   />
                 </div>
-                <div class="objetivos-especificos">
-                  <div class="objetivo-especifico">
+                <div class={styles["objetivos-especificos"]}>
+                  <div class={styles["objetivo-especifico"]}>
                     <input
                       type="text"
                       class="input-value"
@@ -323,7 +323,7 @@ const Project = ({ projectId }) => {
                       placeholder="Objetivo principal"
                     />
                   </div>
-                  <div class="objetivo-especifico">
+                  <div class={styles["objetivo-especifico"]}>
                     <input
                       type="text"
                       class="input-value"
@@ -332,7 +332,7 @@ const Project = ({ projectId }) => {
                       placeholder="Objetivo principal"
                     />
                   </div>
-                  <div class="objetivo-especifico">
+                  <div class={styles["objetivo-especifico"]}>
                     <input
                       type="text"
                       class="input-value"
@@ -343,17 +343,17 @@ const Project = ({ projectId }) => {
                   </div>
                 </div>
               </div>
-              <div class="acciones">
-                <button class="btn-action" onClick={() => setShowModal(true)}>
+              <div class={styles["acciones"]}>
+                <button class={styles["btn-action"]} onClick={() => setShowModal(true)}>
                   <i class="fas fa-table"></i> Tabla de Actividades
                 </button>
-                <button class="btn-action" onClick={handleCompartir}>
+                <button class={styles["btn-action"]} onClick={handleCompartir}>
                   <i class="fas fa-link"></i> Compartir
                 </button>
-                <button class="btn-action" onClick={handleDescargarPDF}>
+                <button class={styles["btn-action"]} onClick={handleDescargarPDF}>
                   <i class="fas fa-download"></i>Descargar
                 </button>
-                <button class="btn-action">
+                <button class={styles["btn-action"]}>
                   <i class="fas fa-list-ol"></i> Backlog
                 </button>
               </div>

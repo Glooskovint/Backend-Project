@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import TaskTable from '../../../features/task/components/TaskTable';
-import "../styles/ModalProject.module.css";
+import TaskTable from '../../task/components/TaskTable';
+import styles from "../styles/ModalProject.module.css";
 
 export default function ModalProject({ visible, onClose, projectId }) {
   const [tasks, setTasks] = useState([]);
@@ -28,18 +28,18 @@ export default function ModalProject({ visible, onClose, projectId }) {
   if (!visible) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-project" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>X</button>
-        <div className="modal-menu">
+    <div className={styles["modal-overlay"]} onClick={onClose}>
+      <div className={styles["modal-project"]} onClick={(e) => e.stopPropagation()}>
+        <button className={styles["modal-close"]} onClick={onClose}>X</button>
+        <div className={styles["modal-menu"]} >
           <div className="main">
-            <button className="btn-modal active"><i className="fas fa-list-ul"></i></button>
+            <button className={styles["btn-modal active"]}><i className="fas fa-list-ul"></i></button>
             {/* ... otros botones ... */}
           </div>
-          <button className="btn-modal"><i className="fas fa-download"></i></button>
+          <button className={styles["btn-modal"]}><i className="fas fa-download"></i></button>
         </div>
-        <div className="sep-v"></div>
-        <div className="modal-content-info">
+        <div className={styles["sep-v"]}></div>
+        <div className={styles["modal-content-info"]}>
           {loading ? (
             <div>Cargando tareas...</div>
           ) : (

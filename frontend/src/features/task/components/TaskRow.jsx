@@ -1,4 +1,5 @@
 import { useState } from "react";
+import styles from "../styles/TaskTable.module.css"; // Asegúrate de que la ruta sea correcta
 
 export default function TaskRow({ task, level, onUpdate, projectId }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -55,8 +56,8 @@ export default function TaskRow({ task, level, onUpdate, projectId }) {
 
   return (
     <>
-      <div className="task-row" style={{ paddingLeft: `${level * 20}px` }}>
-        <div className="task-name">
+      <div className={styles["task-row"]} style={{ paddingLeft: `${level * 20}px` }}>
+        <div className={styles["task-name"]}>
           {isEditing ? (
             <input
               value={taskData.nombre}
@@ -69,7 +70,7 @@ export default function TaskRow({ task, level, onUpdate, projectId }) {
           )}
         </div>
         {/* ... otros campos ... */}
-        <div className="task-actions">
+        <div className={styles["task-actions"]}>
           <button onClick={() => setIsEditing(!isEditing)}>
             {isEditing ? "Guardar" : "Editar"}
           </button>

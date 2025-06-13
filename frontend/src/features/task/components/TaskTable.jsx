@@ -1,6 +1,7 @@
 import { useState } from "react";
 import TaskRow from "./TaskRow";
-import "../styles/TaskTable.module.css";
+import styles from "../styles/TaskTable.module.css";
+
 export default function TaskTable({ tasks, onUpdateTasks, projectId }) {
   const [newTask, setNewTask] = useState("");
 
@@ -32,18 +33,18 @@ export default function TaskTable({ tasks, onUpdateTasks, projectId }) {
         console.error("Error:", error);
         alert("Error al crear tarea");
       });
-    };
+  };
 
   return (
-    <div className="task-table">
-      <div className="table-header">
+    <div className={styles["task-table"]}>
+      <div className={styles["table-header"]}>
         <span>Tarea</span>
         <span>Fecha Inicio</span>
         <span>Fecha Fin</span>
         <span>Presupuesto</span>
         <span>Responsable</span>
       </div>
-      <div className="table-body">
+      <div className={styles["table-body"]}>
         {tasks.map((task) => (
           <TaskRow
             key={task.id}
@@ -54,7 +55,7 @@ export default function TaskTable({ tasks, onUpdateTasks, projectId }) {
           />
         ))}
       </div>
-      <div className="table-footer">
+      <div className={styles["table-footer"]}>
         <input
           type="text"
           value={newTask}
