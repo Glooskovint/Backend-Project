@@ -1,8 +1,13 @@
 const express = require('express');
 const cors = require('cors');
-const { PrismaClient } = require('@prisma/client');
+const errorHandler = require('./middlewares/errorHandler');
+const dotenv = require('dotenv');
+const userRoutes = require('./routes/user.routes');
+const projectRoutes = require('./routes/project.routes');
+const taskRoutes = require('./routes/task.routes');
 
-const prisma = new PrismaClient();
+dotenv.config();
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -11,252 +16,18 @@ app.get('/', (req, res) => {
   res.send('API funcionando correctamente 🚀');
 });
 
-// --- Rutas para Usuario ---
-app.get('/usuarios', async (req, res) => {
-  const { firebase_uid } = req.query;
-  if (firebase_uid) {
-    // obtener un solo usuario por firebase_uid
-    const usuario = await prisma.usuario.findUnique({
-      where: { firebase_uid }
-    });
-    return usuario
-      ? res.json(usuario)
-      : res.status(404).json({ error: 'Usuario no encontrado' });
-  }
-  // sin query devuelve todos
-  const usuarios = await prisma.usuario.findMany();
-  res.json(usuarios);
+// Rutas principales
+app.use('/usuarios', userRoutes);
+app.use('/proyectos', projectRoutes);
+app.use('/tareas', taskRoutes);
+
+// Manejo de rutas no encontradas
+app.use((req, res) => {
+  res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
-app.post('/usuarios', async (req, res) => {
-  const { firebase_uid, email, nombre } = req.body;
-  if (!firebase_uid || !email || !nombre) {
-    return res.status(400).json({ error: 'Faltan campos obligatorios' });
-  }
-  try {
-    const usuario = await prisma.usuario.create({
-      data: { firebase_uid, email, nombre }
-    });
-    res.json(usuario);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al crear el usuario' });
-  }
-});
-
-// --- Rutas para Proyecto ---
-app.get('/proyectos', async (req, res) => {
-  const { ownerId } = req.query;
-  try {
-    const proyectos = await prisma.proyecto.findMany({
-      where: ownerId ? { ownerId } : undefined,
-      include: { owner: true }  // <— Incluimos el owner aquí
-    });
-    res.json(proyectos);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al obtener proyectos' });
-  }
-});
-
-app.get('/proyectos/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const proyecto = await prisma.proyecto.findUnique({
-      where: { id: parseInt(id) },
-      include: {
-        owner: true,
-        miembros: {
-          include: {
-            usuario: true
-          }
-        }
-      }
-    });
-    if (!proyecto) {
-      return res.status(404).json({ error: 'Proyecto no encontrado' });
-    }
-    res.json(proyecto);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: error.message || 'Error al obtener el proyecto' });
-  }
-});
-
-app.post('/proyectos', async (req, res) => {
-  const { titulo, fecha_inicio, fecha_fin, descripcion, objetivo_general, ownerId } = req.body;
-
-  if (!titulo || !fecha_inicio || !fecha_fin) {
-    return res.status(400).json({ error: 'Faltan campos obligatorios: titulo, fecha_inicio, fecha_fin' });
-  }
-
-  try {
-    const dataToCreate = {
-      titulo,
-      descripcion: descripcion || '',
-      objetivo_general: objetivo_general || '',
-      fecha_inicio: new Date(fecha_inicio),
-      fecha_fin: new Date(fecha_fin)
-    };
-    if (ownerId && ownerId.trim() !== '') {
-      dataToCreate.ownerId = ownerId;
-    }
-
-    const proyecto = await prisma.proyecto.create({
-      data: dataToCreate,
-      include: { owner: true }
-    });
-
-    res.json(proyecto);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al crear el proyecto' });
-  }
-});
-
-app.patch('/proyectos/:id', async (req, res) => {
-  const { id } = req.params;
-  const data = req.body;
-  try {
-    const proyecto = await prisma.proyecto.update({
-      where: { id: parseInt(id) },
-      data,
-      include: { owner: true },
-    });
-    res.json(proyecto);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al actualizar el proyecto' });
-  }
-});
-
-// --- Unirse a Proyecto ---
-
-app.post("/proyectos/unirse", async (req, res) => {
-  const { codigo } = req.body; // puede ser un ID o código
-  const firebase_uid = req.headers.authorization; // o como lo estés manejando
-
-  const user = await prisma.usuario.findUnique({
-    where: { firebase_uid },
-  });
-
-  const proyecto = await prisma.proyecto.findUnique({
-    where: { id: parseInt(codigo) }, // ajustar si es código
-  });
-
-  if (!proyecto) return res.status(404).json({ message: "Proyecto no encontrado" });
-
-  await prisma.proyecto.update({
-    where: { id: proyecto.id },
-    data: {
-      usuarios: {
-        connect: { id: user.id },
-      },
-    },
-  });
-
-  res.json({ message: "Te uniste al proyecto" });
-});
-
-// --- Rutas para MiembroProyecto ---
-app.get('/miembros', async (req, res) => {
-  const miembros = await prisma.miembroProyecto.findMany();
-  res.json(miembros);
-});
-
-app.post('/miembros', async (req, res) => {
-  const { usuarioId, proyectoId, rol } = req.body;
-  try {
-    const miembro = await prisma.miembroProyecto.create({
-      data: { usuarioId, proyectoId, rol }
-    });
-    res.json(miembro);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al unir al proyecto' });
-  }
-});
-
-// --- Rutas para ObjetivoEspecifico ---
-app.get('/objetivos', async (req, res) => {
-  const objetivos = await prisma.objetivoEspecifico.findMany();
-  res.json(objetivos);
-});
-
-app.post('/objetivos', async (req, res) => {
-  const { proyectoId, descripcion } = req.body;
-  const objetivo = await prisma.objetivoEspecifico.create({ data: { proyectoId, descripcion } });
-  res.json(objetivo);
-});
-
-// --- Rutas para Tarea ---
-app.get('/tareas', async (req, res) => {
-  const tareas = await prisma.tarea.findMany();
-  res.json(tareas);
-});
-
-app.post('/tareas', async (req, res) => {
-  const { proyectoId, parentId, nombre, fecha_inicio, fecha_fin, presupuesto } = req.body;
-
-  try {
-    const tarea = await prisma.tarea.create({
-      data: {
-        proyectoId: parseInt(proyectoId),
-        parentId: parentId ? parseInt(parentId) : null,
-        nombre,
-        fecha_inicio: new Date(fecha_inicio),
-        fecha_fin: new Date(fecha_fin),
-        presupuesto: parseFloat(presupuesto) || 0,
-        metadata: {} // Valor por defecto para metadata
-      },
-      include: {
-        subtareas: true // Incluir subtareas en la respuesta
-      }
-    });
-    res.json(tarea);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Error al crear tarea' });
-  }
-});
-
-// plus para las tareas: Obtener tareas por proyecto (con jerarquía)
-app.get('/proyectos/:id/tareas', async (req, res) => {
-  const { id } = req.params;
-  try {
-    const tareas = await prisma.tarea.findMany({
-      where: { proyectoId: parseInt(id) },
-      include: { subtareas: true, asignaciones: true }
-    });
-    res.json(buildHierarchy(tareas));
-  } catch (error) {
-    res.status(500).json({ error: 'Error al obtener tareas' });
-  }
-});
-
-// plus para las tareas: Función para construir jerarquía
-function buildHierarchy(tareas) {
-  const map = {};
-  const roots = [];
-  tareas.forEach(tarea => {
-    map[tarea.id] = { ...tarea, subtareas: [] };
-    if (!tarea.parentId) roots.push(map[tarea.id]);
-    else map[tarea.parentId].subtareas.push(map[tarea.id]);
-  });
-  return roots;
-}
-
-// --- Rutas para AsignacionTarea ---
-app.get('/asignaciones', async (req, res) => {
-  const asignaciones = await prisma.asignacionTarea.findMany();
-  res.json(asignaciones);
-});
-
-app.post('/asignaciones', async (req, res) => {
-  const { tareaId, usuarioId, estado } = req.body;
-  const asignacion = await prisma.asignacionTarea.create({ data: { tareaId, usuarioId, estado } });
-  res.json(asignacion);
-});
+// Middleware de manejo de errores
+app.use(errorHandler);
 
 // Puerto
 const PORT = process.env.PORT || 5000;
