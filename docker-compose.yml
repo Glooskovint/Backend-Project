@@ -12,6 +12,11 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build: ./backend
@@ -23,21 +28,34 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
     depends_on:
-      db:
-        condition: service_healthy
-    command: sh -c "while ! nc -z db 5432; do sleep 1; done; npx prisma generate && npx prisma migrate deploy && node src/server.js"
+      - db
+    command: >
+      sh -c "
+        echo 'Esperando a la base de datos...';
+        timeout=30;
+        while ! nc -z db 5432; do
+          sleep 1;
+          timeout=$((timeout - 1));
+          if [ $$timeout -eq 0 ]; then
+            echo 'Error: Base de datos no responde.';
+            exit 1;
+          fi;
+        done;
+        echo 'Base de datos disponible. Ejecutando migraciones...';
+        npx prisma generate &&
+        npx prisma migrate deploy &&
+        node src/server.js
+      "
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:5000/health || exit 1" ]
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
       interval: 30s
       retries: 3
+      start_period: 10s
     networks:
       - backend
-    profiles:
-      - dev
 
 volumes:
   postgres-data:
-
 
 networks:
   backend:
