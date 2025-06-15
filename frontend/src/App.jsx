@@ -1,20 +1,20 @@
-import { useState } from 'react';
-import { AuthProvider } from './features/auth/AuthContext';
-import Home from './pages/home/HomePage';
-import Project from './pages/project/ProjectPage';
+import { useState } from "react";
+import { AuthProvider } from "./contexts/AuthContext";
+import Home from "./views/home/Home";
+import Project from "./views/project/Project";
 
 function App() {
-  const [currentView, setCurrentView] = useState('home');
+  const [currentView, setCurrentView] = useState("home");
   const [currentProjectId, setCurrentProjectId] = useState(null);
 
   const handleProjectCreated = (projectId) => {
-    setCurrentProjectId(projectId)
-    setCurrentView('project');
+    setCurrentProjectId(projectId);
+    setCurrentView("project");
   };
 
   return (
     <AuthProvider>
-      {currentView === 'project' && currentProjectId ? (
+      {currentView === "project" && currentProjectId ? (
         <Project projectId={currentProjectId} />
       ) : (
         <Home onProjectCreated={handleProjectCreated} />
