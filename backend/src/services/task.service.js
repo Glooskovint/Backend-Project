@@ -29,13 +29,13 @@ exports.create = async (data) => {
     },
   });
 };
-
+ 
 exports.update = async (id, data) => {
   const {
     nombre,
     fecha_inicio,
     fecha_fin,
-    presupuesto,
+    presupuesto, 
     parentId,
     metadata,
   } = data;

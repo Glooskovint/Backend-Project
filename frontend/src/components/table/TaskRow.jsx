@@ -65,7 +65,7 @@ export default function TaskRow({ task, level, onUpdate, projectId }) {
     }),
   })
     .then((res) => {
-      if (!res.ok) throw new Error("Error al guardar");
+      if (!res.ok) throw new Error("Error al actualizar tarea");
       return res.json();
     })
     .then((data) => {
@@ -74,7 +74,7 @@ export default function TaskRow({ task, level, onUpdate, projectId }) {
     })
     .catch((err) => {
       console.error(err);
-      alert("Error al guardar");
+      alert("Error al guardar: " + err.message);
     });
 };
 

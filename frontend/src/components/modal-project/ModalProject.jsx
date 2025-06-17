@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import TaskTable from '../table/TaskTable';
 import "./Modal-project.css";
 import EDT from '../edt/edt';
+import Gantt from '../gantt/gantt';
 
 export default function ModalProject({ visible, onClose, projectId }) {
   const [tasks, setTasks] = useState([]);
@@ -41,7 +42,7 @@ export default function ModalProject({ visible, onClose, projectId }) {
           <div className="main">
             <button className={select === 1 ? 'btn-modal active' : 'btn-modal' } onClick={() => handleSelectChange(1)}><i className="fas fa-list-ul"></i></button>
             <button className={select === 2 ? 'btn-modal active' : 'btn-modal' } onClick={() => handleSelectChange(2)}><i className="fas fa-chart-bar"></i></button>
-            <button className={select === 3 ? 'btn-modal active' : 'btn-modal' } ><i className="fas fa-users"></i></button>
+            <button className={select === 3 ? 'btn-modal active' : 'btn-modal' } onClick={() => handleSelectChange(3)}><i className="fas fa-users"></i></button>
           </div>
           <button className="btn-modal"><i className="fas fa-download"></i></button>
         </div>
@@ -57,6 +58,8 @@ export default function ModalProject({ visible, onClose, projectId }) {
             />
           ) : select === 2 ? (
             <EDT tasks={tasks} />
+          ) : select == 3 ? (
+            <Gantt tasks={tasks} />
           ) : (
             <div>Colaboradores del proyecto</div>
           )}

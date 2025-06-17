@@ -31,13 +31,12 @@ services:
       - db
     command: >
       sh -c "
-        npm install socket.io
         echo 'Esperando a la base de datos...';
         timeout=30;
         while ! nc -z db 5432; do
           sleep 1;
           timeout=$((timeout - 1));
-          if [ $$timeout -eq 0 ]; then
+          if [ $timeout -eq 0 ]; then
             echo 'Error: Base de datos no responde.';
             exit 1;
           fi;
