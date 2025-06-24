@@ -5,11 +5,12 @@ import toast from 'react-hot-toast'
 
 export const useProjectStore = create((set, get) => ({
   projects: [],
+  sharedProjects: [],
   currentProject: null,
   tasks: [],
   members: [],
   loading: false,
-  
+
   // Proyectos
   fetchProjects: async (ownerId) => {
     set({ loading: true })
@@ -22,12 +23,24 @@ export const useProjectStore = create((set, get) => ({
       toast.error('Error al cargar proyectos')
     }
   },
-  
+
+  fetchSharedProjects: async (userId) => {
+    set({ loading: true })
+    try {
+      const sharedProjects = await api.getSharedProjects(userId)
+      set({ sharedProjects, loading: false })
+    } catch (error) {
+      console.error('Error al obtener proyectos compartidos:', error)
+      set({ loading: false })
+      toast.error('Error al cargar proyectos compartidos')
+    }
+  },
+
   createProject: async (projectData) => {
     try {
       const newProject = await api.createProject(projectData)
-      set(state => ({ 
-        projects: [...state.projects, newProject] 
+      set(state => ({
+        projects: [...state.projects, newProject]
       }))
       toast.success('Proyecto creado correctamente')
       return newProject
@@ -37,16 +50,16 @@ export const useProjectStore = create((set, get) => ({
       throw error
     }
   },
-  
+
   fetchProject: async (id) => {
     set({ loading: true })
     try {
       const project = await api.getProject(id)
       set({ currentProject: project, loading: false })
-      
+
       // Conectar a la sala del proyecto para actualizaciones en tiempo real
       socketService.joinProject(id)
-      
+
       return project
     } catch (error) {
       console.error('Error al obtener proyecto:', error)
@@ -54,15 +67,15 @@ export const useProjectStore = create((set, get) => ({
       toast.error('Error al cargar proyecto')
     }
   },
-  
+
   updateProject: async (id, data) => {
     try {
       const updatedProject = await api.updateProject(id, data)
       set({ currentProject: updatedProject })
-      
+
       // Emitir actualización en tiempo real
       socketService.editProjectTitle(id, data.titulo)
-      
+
       toast.success('Proyecto actualizado')
       return updatedProject
     } catch (error) {
@@ -71,7 +84,7 @@ export const useProjectStore = create((set, get) => ({
       throw error
     }
   },
-  
+
   // Tareas
   fetchTasks: async (projectId) => {
     try {
@@ -82,12 +95,12 @@ export const useProjectStore = create((set, get) => ({
       toast.error('Error al cargar tareas')
     }
   },
-  
+
   createTask: async (taskData) => {
     try {
       const newTask = await api.createTask(taskData)
-      set(state => ({ 
-        tasks: [...state.tasks, newTask] 
+      set(state => ({
+        tasks: [...state.tasks, newTask]
       }))
       toast.success('Tarea creada correctamente')
       return newTask
@@ -97,12 +110,12 @@ export const useProjectStore = create((set, get) => ({
       throw error
     }
   },
-  
+
   updateTask: async (id, data) => {
     try {
       const updatedTask = await api.updateTask(id, data)
       set(state => ({
-        tasks: state.tasks.map(task => 
+        tasks: state.tasks.map(task =>
           task.id === id ? updatedTask : task
         )
       }))
@@ -114,7 +127,7 @@ export const useProjectStore = create((set, get) => ({
       throw error
     }
   },
-  
+
   deleteTask: async (id) => {
     try {
       await api.deleteTask(id)
@@ -128,7 +141,7 @@ export const useProjectStore = create((set, get) => ({
       throw error
     }
   },
-  
+
   // Miembros
   fetchMembers: async (projectId) => {
     try {
@@ -139,16 +152,16 @@ export const useProjectStore = create((set, get) => ({
       toast.error('Error al cargar miembros')
     }
   },
-  
+
   getInviteLink: async (projectId) => {
     try {
       const { token } = await api.getInviteLink(projectId)
       const inviteUrl = `${window.location.origin}/join/${token}`
-      
+
       // Copiar al portapapeles
       await navigator.clipboard.writeText(inviteUrl)
       toast.success('Enlace de invitación copiado al portapapeles')
-      
+
       return inviteUrl
     } catch (error) {
       console.error('Error al obtener enlace de invitación:', error)
@@ -156,7 +169,7 @@ export const useProjectStore = create((set, get) => ({
       throw error
     }
   },
-  
+
   joinProject: async (token, userId) => {
     try {
       const result = await api.joinProjectByToken(token, userId)
@@ -168,7 +181,7 @@ export const useProjectStore = create((set, get) => ({
       throw error
     }
   },
-  
+
   // Objetivos
   createObjective: async (objectiveData) => {
     try {
@@ -181,13 +194,13 @@ export const useProjectStore = create((set, get) => ({
       throw error
     }
   },
-  
+
   // Limpiar estado
   clearCurrentProject: () => {
-    set({ 
-      currentProject: null, 
-      tasks: [], 
-      members: [] 
+    set({
+      currentProject: null,
+      tasks: [],
+      members: []
     })
     socketService.disconnect()
   }

@@ -16,7 +16,7 @@ class ApiService {
     }
 
     const response = await fetch(url, config)
-    
+
     if (!response.ok) {
       const error = await response.json().catch(() => ({ error: 'Error desconocido' }))
       throw new Error(error.error || `HTTP error! status: ${response.status}`)
@@ -85,6 +85,10 @@ class ApiService {
       method: 'POST',
       body: { userId },
     })
+  }
+
+  async getSharedProjects(userId) {
+    return this.request(`/proyectos/compartidos/${userId}`);
   }
 
   // Tareas
