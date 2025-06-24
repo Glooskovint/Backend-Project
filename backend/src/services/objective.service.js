@@ -19,3 +19,7 @@ exports.update = async (id, data) => {
 exports.delete = async (id) => {
   return prisma.objetivoEspecifico.delete({ where: { id } });
 };
+
+exports.getObjectivesByProjectId = async (proyectoId) => {
+  return prisma.objetivoEspecifico.findMany({ where: { proyectoId }, orderBy: { orden: 'asc' } });
+};

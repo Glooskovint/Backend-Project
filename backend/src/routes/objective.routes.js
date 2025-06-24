@@ -5,6 +5,7 @@ const validateBody = require('../middlewares/validateBody');
 const { createObjectiveSchema, updateObjectiveSchema } = require('../validators/objective.schema');
 
 router.get('/', controller.getAll);
+router.get('/proyecto/:proyectoId', controller.getByProjectId);
 router.post('/', validateBody(createObjectiveSchema), controller.create);
 router.patch('/:id', validateBody(updateObjectiveSchema), controller.update);
 router.delete('/:id', controller.delete);

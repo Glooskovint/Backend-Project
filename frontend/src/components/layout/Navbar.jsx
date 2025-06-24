@@ -1,21 +1,24 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../stores/authStore'
-import { 
-  Home, 
-  Plus, 
-  LogIn, 
-  LogOut, 
-  User, 
+import {
+  Home,
+  Plus,
+  LogIn,
+  LogOut,
+  User,
   Settings,
   Menu,
-  X
+  X,
+  Users, // 🆕
 } from 'lucide-react'
 import { useState } from 'react'
+import JoinProjectModal from '../project/JoinProjectModal' // 🆕
 
 export default function Navbar() {
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false) // 🆕
 
   const handleLogout = async () => {
     await logout()
@@ -32,8 +35,8 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="flex items-center space-x-2 text-xl font-bold text-primary-600 hover:text-primary-700 transition-colors"
           >
             <Home className="w-6 h-6" />
@@ -51,16 +54,24 @@ export default function Navbar() {
                   <Plus className="w-4 h-4" />
                   <span>Crear Proyecto</span>
                 </Link>
-                
+
+                <button
+                  onClick={() => setIsModalOpen(true)} // 🆕
+                  className="text-gray-600 hover:text-gray-800 transition-colors flex items-center space-x-2"
+                >
+                  <Users className="w-4 h-4" />
+                  <span>Unirse a Proyecto</span>
+                </button>
+
                 <div className="flex items-center space-x-2 text-gray-700">
                   <User className="w-4 h-4" />
                   <span className="text-sm">{user.nombre}</span>
                 </div>
-                
+
                 <button className="p-2 text-gray-500 hover:text-gray-700 transition-colors">
                   <Settings className="w-5 h-5" />
                 </button>
-                
+
                 <button
                   onClick={handleLogout}
                   className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
@@ -74,7 +85,7 @@ export default function Navbar() {
                 <button className="p-2 text-gray-500 hover:text-gray-700 transition-colors">
                   <Settings className="w-5 h-5" />
                 </button>
-                
+
                 <Link
                   to="/login"
                   className="flex items-center space-x-2 btn-primary"
@@ -105,7 +116,7 @@ export default function Navbar() {
                     <User className="w-4 h-4" />
                     <span className="text-sm">{user.nombre}</span>
                   </div>
-                  
+
                   <Link
                     to="/create-project"
                     className="flex items-center space-x-2 btn-primary w-full justify-center"
@@ -114,12 +125,23 @@ export default function Navbar() {
                     <Plus className="w-4 h-4" />
                     <span>Crear Proyecto</span>
                   </Link>
-                  
+
+                  <button
+                    onClick={() => {
+                      setIsMenuOpen(false)
+                      setIsModalOpen(true) // 🆕
+                    }}
+                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors px-2 py-2"
+                  >
+                    <Users className="w-5 h-5" />
+                    <span>Unirse a Proyecto</span>
+                  </button>
+
                   <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors px-2 py-2">
                     <Settings className="w-5 h-5" />
                     <span>Accesibilidad</span>
                   </button>
-                  
+
                   <button
                     onClick={handleLogout}
                     className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors px-2 py-2"
@@ -134,7 +156,7 @@ export default function Navbar() {
                     <Settings className="w-5 h-5" />
                     <span>Accesibilidad</span>
                   </button>
-                  
+
                   <Link
                     to="/login"
                     className="flex items-center space-x-2 btn-primary w-full justify-center"
@@ -149,6 +171,9 @@ export default function Navbar() {
           </div>
         )}
       </div>
+
+      {/* 🆕 Modal */}
+      <JoinProjectModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </nav>
   )
 }

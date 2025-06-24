@@ -87,3 +87,13 @@ exports.joinByInvite = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+exports.getSharedProjects = async (req, res, next) => {
+  try {
+    const { userId } = req.params
+    const shared = await projectService.getSharedProjects(userId)
+    res.json(shared)
+  } catch (error) {
+    next(error)
+  }
+}
