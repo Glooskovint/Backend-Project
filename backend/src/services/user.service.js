@@ -7,3 +7,9 @@ exports.getAll = async () => {
 exports.create = async (data) => {
   return await prisma.usuario.create({ data });
 };
+
+exports.getByFirebaseUid = async (firebaseUid) => {
+  return await prisma.usuario.findUnique({
+    where: { firebase_uid: firebaseUid },
+  });
+}

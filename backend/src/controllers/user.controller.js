@@ -25,3 +25,21 @@ exports.create = async (req, res) => {
         res.status(500).json({ error: 'Error al crear el usuario' });
     }
 };
+
+exports.getByFirebaseUid = async (req, res) => {
+  const { firebaseUid } = req.params;
+  console.log('Buscando usuario con UID:', firebaseUid);
+
+  try {
+    const user = await userService.getByFirebaseUid(firebaseUid);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    res.json(user);
+  } catch (err) {
+    console.error('Error en getByFirebaseUid:', err);
+    res.status(500).json({ error: 'Error interno' });
+  }
+};
