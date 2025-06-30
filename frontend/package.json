@@ -11,17 +11,17 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.17.0",
+    "date-fns": "^3.0.6",
     "firebase": "^10.7.1",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.2",
+    "lucide-react": "^0.303.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.20.1",
     "socket.io-client": "^4.7.4",
-    "zustand": "^4.4.7",
-    "lucide-react": "^0.303.0",
-    "react-hot-toast": "^2.4.1",
-    "date-fns": "^3.0.6",
-    "html2canvas": "^1.4.1",
-    "jspdf": "^2.5.1"
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",

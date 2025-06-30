@@ -12,7 +12,8 @@ import {
   Table,
   BarChart3,
   Download,
-  FileText
+  FileText,
+  Loader2 // Importar el ícono de carga
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -22,6 +23,7 @@ import ObjectivesPanel from '../components/project/ObjectivesPanel'
 import Gantt from '../components/project/Gantt'
 import EDT from '../components/project/EDT'
 import Presupuesto from '../components/project/Presupuesto'
+import ProjectExportPDF from '../components/project/ProjectExportPDF' // Importar el componente de exportación
 
 export default function ProjectView() {
   const { id } = useParams()
@@ -42,6 +44,8 @@ export default function ProjectView() {
   const [ showGantt, setShowGantt ] = useState(false)
   const [ showEDT, setShowEDT ] = useState(false)
   const [showPresupuesto, setShowPresupuesto] = useState(false)
+  const [isExporting, setIsExporting] = useState(false) // Estado para controlar la exportación
+  const [showExportComponent, setShowExportComponent] = useState(false) // Estado para montar el componente de PDF
 
   useEffect(() => {
     if (id) {
@@ -101,6 +105,26 @@ export default function ProjectView() {
     setShowPresupuesto(true)
   }
 
+  const handleExportPDF = () => {
+    if (!currentProject) return;
+    setIsExporting(true);
+    setShowExportComponent(true);
+    // El componente ProjectExportPDF se encargará de la lógica de generación
+    // y se desmontará después a través de onExportFinish
+  }
+
+  const onPDFExportFinish = (success) => {
+    setShowExportComponent(false); // Desmontar el componente ProjectExportPDF
+    setIsExporting(false);
+    if (success) {
+      // Podrías mostrar una notificación de éxito aquí
+      console.log("PDF exportado con éxito");
+    } else {
+      // Podrías mostrar una notificación de error aquí
+      console.error("Error al exportar PDF");
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -134,6 +158,15 @@ export default function ProjectView() {
     {showGantt && <Gantt projectId={id} onClose={() => setShowGantt(false)} />}
     {showEDT && <EDT projectId={id} onClose={() => setShowEDT(false)} />}
     {showPresupuesto && <Presupuesto projectId={id} onClose={() => setShowPresupuesto(false)} />}
+
+    {/* Componente de exportación a PDF (se monta cuando es necesario) */}
+    {showExportComponent && currentProject && (
+      <ProjectExportPDF
+        project={currentProject}
+        onExportFinish={onPDFExportFinish}
+      />
+    )}
+
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
@@ -207,9 +240,17 @@ export default function ProjectView() {
               <span>Compartir</span>
             </button>
             
-            <button className="btn-secondary flex items-center space-x-2">
-              <Download className="w-4 h-4" />
-              <span>Exportar</span>
+            <button
+              onClick={handleExportPDF}
+              className="btn-secondary flex items-center space-x-2"
+              disabled={isExporting} // Deshabilitar mientras se exporta
+            >
+              {isExporting ? (
+                <Loader2 className="w-4 h-4 animate-spin" /> // Ícono de carga
+              ) : (
+                <Download className="w-4 h-4" />
+              )}
+              <span>{isExporting ? 'Exportando...' : 'Exportar'}</span>
             </button>
           </div>
         </div>
