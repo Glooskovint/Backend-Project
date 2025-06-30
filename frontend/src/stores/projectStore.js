@@ -181,6 +181,40 @@ export const useProjectStore = create((set, get) => ({
       throw error
     }
   },
+
+  getObjetives: async (projectId) => {
+    try {
+      const objectives = await api.getObjectivesByProject(projectId)
+      return objectives
+    } catch (error) {
+      console.error('Error al obtener objetivos:', error)
+      toast.error('Error al cargar objetivos')
+      throw error
+    }
+  },
+
+  updateObjective: async (id, data) => {
+    try {
+      const updatedObjective = await api.updateObjective(id, data)
+      toast.success('Objetivo actualizado correctamente')
+      return updatedObjective
+    } catch (error) {
+      console.error('Error al actualizar objetivo:', error)
+      toast.error('Error al actualizar objetivo')
+      throw error
+    }
+  },
+
+  deleteObjective: async (id) => {
+    try {
+      await api.deleteObjective(id)
+      toast.success('Objetivo eliminado correctamente')
+    } catch (error) {
+      console.error('Error al eliminar objetivo:', error)
+      toast.error('Error al eliminar objetivo')
+      throw error
+    }
+  },
   
   // Limpiar estado
   clearCurrentProject: () => {

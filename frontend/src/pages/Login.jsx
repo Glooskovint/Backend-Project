@@ -12,7 +12,7 @@ export default function Login() {
   })
   const [loading, setLoading] = useState(false)
   
-  const { login, register } = useAuthStore()
+  const { login, register  } = useAuthStore()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -25,6 +25,7 @@ export default function Login() {
       } else {
         await register(formData.email, formData.password, formData.nombre)
       }
+
       navigate('/')
     } catch (error) {
       console.error('Error de autenticación:', error)

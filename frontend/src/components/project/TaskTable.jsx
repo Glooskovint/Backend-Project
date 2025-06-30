@@ -54,7 +54,7 @@ export default function TaskTable({ projectId }) {
     return (
       <div key={task.id}>
         <div className="flex items-center hover:bg-gray-50 transition-colors">
-          <div className="table-cell" style={{ paddingLeft: `${level * 20 + 16}px` }}>
+          <div className="table-cell flex-1" style={{ paddingLeft: `${level * 20 + 16}px` }}>
             <div className="flex items-center space-x-2">
               {hasSubtasks && (
                 <button
@@ -74,7 +74,7 @@ export default function TaskTable({ projectId }) {
             </div>
           </div>
           
-          <div className="table-cell">
+          <div className="table-cell w-32">
             <div className="flex items-center space-x-1 text-sm text-gray-600">
               <Calendar className="w-4 h-4" />
               <span>
@@ -83,7 +83,7 @@ export default function TaskTable({ projectId }) {
             </div>
           </div>
           
-          <div className="table-cell">
+          <div className="table-cell w-32">
             <div className="flex items-center space-x-1 text-sm text-gray-600">
               <Calendar className="w-4 h-4" />
               <span>
@@ -92,21 +92,21 @@ export default function TaskTable({ projectId }) {
             </div>
           </div>
           
-          <div className="table-cell">
+          <div className="table-cell w-32">
             <div className="flex items-center space-x-1 text-sm text-gray-600">
               <DollarSign className="w-4 h-4" />
               <span>${parseFloat(task.presupuesto).toLocaleString()}</span>
             </div>
           </div>
           
-          <div className="table-cell">
+          <div className="table-cell w-32">
             <div className="flex items-center space-x-1 text-sm text-gray-600">
               <User className="w-4 h-4" />
               <span>{task.asignaciones?.length || 0} miembros</span>
             </div>
           </div>
           
-          <div className="table-cell">
+          <div className="table-cell w-32">
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => handleEdit(task)}

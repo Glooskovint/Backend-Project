@@ -16,6 +16,8 @@ export default function Home() {
     }
   }, [user, fetchProjects])
 
+  console.log('User:', user)
+
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-blue-100">

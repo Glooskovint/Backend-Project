@@ -8,6 +8,6 @@ router.get('/', taskController.getAll);
 router.post('/', validateBody(createTaskSchema), taskController.create);
 router.patch('/:id', taskController.update);
 router.delete('/:id', taskController.remove);
-//router.get('/proyecto/:id', taskController.getByProject);
+router.get('/proyecto/:id', taskController.getByProject);
 
 module.exports = router;

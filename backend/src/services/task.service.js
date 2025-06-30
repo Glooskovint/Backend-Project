@@ -4,6 +4,16 @@ exports.getAll = async () => {
   return await prisma.tarea.findMany();
 };
 
+exports.getByProject = async (proyectoId) => {
+  return await prisma.tarea.findMany({
+    where: { proyectoId: parseInt(proyectoId) },
+    include: {
+      subtareas: true,
+      proyecto: true,
+    },
+  });
+};
+
 exports.create = async (data) => {
   const {
     proyectoId,

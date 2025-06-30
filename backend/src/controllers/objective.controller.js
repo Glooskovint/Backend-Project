@@ -19,6 +19,16 @@ exports.getAll = async (req, res) => {
   }
 };
 
+exports.getByProjectId = async (req, res) => {
+  const { proyectoId } = req.params;
+  try {
+    const objetivos = await objectiveService.getObjectivesByProjectId(parseInt(proyectoId));
+    res.json(objetivos);
+  } catch (error) {
+    res.status(500).json({ error: 'Error al obtener objetivos del proyecto' });
+  }
+}
+
 exports.update = async (req, res) => {
   const { id } = req.params;
   try {

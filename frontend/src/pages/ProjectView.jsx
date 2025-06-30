@@ -9,7 +9,6 @@ import {
   Users, 
   Share2, 
   Edit3,
-  Plus,
   Table,
   BarChart3,
   Download,
@@ -20,6 +19,9 @@ import { es } from 'date-fns/locale'
 import TaskTable from '../components/project/TaskTable'
 import MembersPanel from '../components/project/MembersPanel'
 import ObjectivesPanel from '../components/project/ObjectivesPanel'
+import Gantt from '../components/project/Gantt'
+import EDT from '../components/project/EDT'
+import Presupuesto from '../components/project/Presupuesto'
 
 export default function ProjectView() {
   const { id } = useParams()
@@ -30,12 +32,16 @@ export default function ProjectView() {
     loading, 
     fetchProject, 
     clearCurrentProject,
-    getInviteLink 
+    getInviteLink,
+    updateProject
   } = useProjectStore()
   
   const [activeTab, setActiveTab] = useState('overview')
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState({})
+  const [ showGantt, setShowGantt ] = useState(false)
+  const [ showEDT, setShowEDT ] = useState(false)
+  const [showPresupuesto, setShowPresupuesto] = useState(false)
 
   useEffect(() => {
     if (id) {
@@ -66,8 +72,33 @@ export default function ProjectView() {
   }
 
   const handleSaveEdit = async () => {
-    // Implementar actualización del proyecto
     setIsEditing(false)
+    try {
+      await updateProject(
+        parseInt(id), // ID del proyecto
+        {
+          titulo: editData.titulo,
+          descripcion: editData.descripcion,
+          objetivo_general: editData.objetivo_general,
+        }
+      );
+      // Optionally, you can show a success message here
+    } catch (error) {
+      console.error('Error al guardar cambios:', error)
+      // Optionally, show an error message to the user
+    }
+  }
+
+  const handleShowGantt = () => {
+    setShowGantt(true)
+  }
+
+  const handleShowEDT = () => {
+    setShowEDT(true)
+  }
+
+  const handleShowPresupuesto = () => {
+    setShowPresupuesto(true)
   }
 
   if (loading) {
@@ -99,6 +130,10 @@ export default function ProjectView() {
   const isOwner = user && currentProject.ownerId === user.firebase_uid
 
   return (
+  <>
+    {showGantt && <Gantt projectId={id} onClose={() => setShowGantt(false)} />}
+    {showEDT && <EDT projectId={id} onClose={() => setShowEDT(false)} />}
+    {showPresupuesto && <Presupuesto projectId={id} onClose={() => setShowPresupuesto(false)} />}
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
       <div className="mb-8">
@@ -269,15 +304,19 @@ export default function ProjectView() {
               Visualizaciones del Proyecto
             </h3>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <button className="p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 transition-colors">
+              <button className="p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 transition-colors"
+                onClick={handleShowGantt}
+              >
                 <BarChart3 className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                 <p className="text-sm text-gray-600">Diagrama de Gantt</p>
               </button>
-              <button className="p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 transition-colors">
+              <button className="p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 transition-colors"
+                onClick={handleShowEDT}>
                 <Target className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-600">Estructura de Tareas</p>
+                <p className="text-sm text-gray-600">Estructura de Desglose de Tareas</p>
               </button>
-              <button className="p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 transition-colors">
+              <button className="p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 transition-colors"
+              onClick={handleShowPresupuesto}>
                 <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
                 <p className="text-sm text-gray-600">Matriz de Presupuestos</p>
               </button>
@@ -286,5 +325,6 @@ export default function ProjectView() {
         )}
       </div>
     </div>
+  </>
   )
 }

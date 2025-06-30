@@ -89,7 +89,7 @@ class ApiService {
 
   // Tareas
   async getTasks(projectId) {
-    return this.request(`/tareas?proyectoId=${projectId}`)
+    return this.request(`/tareas/proyecto/${projectId}`)
   }
 
   async createTask(taskData) {
@@ -118,6 +118,10 @@ class ApiService {
       method: 'POST',
       body: objectiveData,
     })
+  }
+
+  async getObjectivesByProject(projectId) {
+    return this.request(`/objetivos/proyecto/${projectId}`)
   }
 
   async updateObjective(id, data) {
