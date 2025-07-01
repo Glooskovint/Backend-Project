@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../stores/authStore';
-import { useProjectStore } from '../../stores/projectStore';
-import { Calendar, FileText, Target } from 'lucide-react';
-import { format } from 'date-fns';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../stores/authStore";
+import { useProjectStore } from "../../stores/projectStore";
+import { Calendar, FileText, Target } from "lucide-react";
+import { format } from "date-fns";
 
 const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
   const [formData, setFormData] = useState({
-    titulo: '',
-    descripcion: '',
-    objetivo_general: '',
-    fecha_inicio: format(new Date(), 'yyyy-MM-dd'),
-    fecha_fin: format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), 'yyyy-MM-dd')
+    titulo: "",
+    descripcion: "",
+    objetivo_general: "",
+    fecha_inicio: format(new Date(), "yyyy-MM-dd"),
+    fecha_fin: format(
+      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      "yyyy-MM-dd"
+    ),
   });
   const [loading, setLoading] = useState(false);
 
@@ -24,18 +27,18 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
     setLoading(true);
 
     if (!user) {
-        // Esto no debería suceder si el flujo de UI es correcto, pero es una buena guarda
-        setLoading(false);
-        // Podríamos llamar a onCancel o mostrar un error específico
-        console.error("Usuario no autenticado al intentar crear proyecto.");
-        if (onCancel) onCancel();
-        return;
+      // Esto no debería suceder si el flujo de UI es correcto, pero es una buena guarda
+      setLoading(false);
+      // Podríamos llamar a onCancel o mostrar un error específico
+      console.error("Usuario no autenticado al intentar crear proyecto.");
+      if (onCancel) onCancel();
+      return;
     }
 
     try {
       const projectData = {
         ...formData,
-        ownerId: user.firebase_uid
+        ...(user && { ownerId: user.firebase_uid }), // solo asigna ownerId si hay usuario
       };
 
       const newProject = await createProject(projectData);
@@ -45,7 +48,7 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
         navigate(`/project/${newProject.id}`); // Fallback si no se provee onProjectCreated
       }
     } catch (error) {
-      console.error('Error al crear proyecto:', error);
+      console.error("Error al crear proyecto:", error);
       // Aquí se podría añadir un toast de error si no lo maneja ya `createProject`
     } finally {
       setLoading(false);
@@ -55,14 +58,17 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="titulo" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="titulo"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Título del Proyecto *
         </label>
         <div className="relative">
@@ -82,7 +88,10 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
       </div>
 
       <div>
-        <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="descripcion"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Descripción
         </label>
         <textarea
@@ -98,7 +107,10 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
       </div>
 
       <div>
-        <label htmlFor="objetivo_general" className="block text-sm font-medium text-gray-700 mb-2">
+        <label
+          htmlFor="objetivo_general"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
           Objetivo General
         </label>
         <div className="relative">
@@ -118,7 +130,10 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
 
       <div className="grid md:grid-cols-2 gap-6">
         <div>
-          <label htmlFor="fecha_inicio" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="fecha_inicio"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Fecha de Inicio *
           </label>
           <div className="relative">
@@ -137,7 +152,10 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
         </div>
 
         <div>
-          <label htmlFor="fecha_fin" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="fecha_fin"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Fecha de Finalización *
           </label>
           <div className="relative">
@@ -159,14 +177,14 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
 
       <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
         {onCancel && ( // Mostrar botón de cancelar solo si se provee la función
-            <button
-                type="button"
-                onClick={onCancel}
-                className="btn-secondary"
-                disabled={loading}
-            >
-                Cancelar
-            </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="btn-secondary"
+            disabled={loading}
+          >
+            Cancelar
+          </button>
         )}
         <button
           type="submit"

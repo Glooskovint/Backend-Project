@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
 import { useProjectStore } from "../stores/projectStore";
 import { Plus, Calendar, Users, Target } from "lucide-react";
@@ -8,7 +8,14 @@ import { es } from "date-fns/locale";
 
 export default function Home() {
   const { user } = useAuthStore();
-  const { projects, sharedProjects, loading, fetchProjects, fetchSharedProjects } = useProjectStore();
+  const {
+    projects,
+    sharedProjects,
+    loading,
+    fetchProjects,
+    fetchSharedProjects,
+  } = useProjectStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -17,7 +24,10 @@ export default function Home() {
     }
   }, [user, fetchProjects, fetchSharedProjects]);
 
-  console.log('User:', user)
+  // Botón siempre visible
+  const handleCreateProject = () => {
+    navigate("/create-project");
+  };
 
   if (!user) {
     return (
@@ -35,9 +45,13 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Link to="/login" className="btn-primary text-lg px-8 py-3">
-                Comenzar Ahora
-              </Link>
+              <button
+                onClick={handleCreateProject}
+                className="btn-primary flex items-center space-x-2"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Nuevo Proyecto</span>
+              </button>
               <Link to="/login" className="btn-outline text-lg px-8 py-3">
                 Iniciar Sesión
               </Link>
@@ -87,13 +101,13 @@ export default function Home() {
           </p>
         </div>
 
-        <Link
-          to="/create-project"
+        <button
+          onClick={handleCreateProject}
           className="btn-primary flex items-center space-x-2"
         >
           <Plus className="w-5 h-5" />
           <span>Nuevo Proyecto</span>
-        </Link>
+        </button>
       </div>
 
       {loading ? (
@@ -110,9 +124,9 @@ export default function Home() {
             <p className="text-gray-600 mb-6">
               Crea tu primer proyecto para comenzar a planificar y colaborar.
             </p>
-            <Link to="/create-project" className="btn-primary">
+            <button onClick={handleCreateProject} className="btn-primary">
               Crear Primer Proyecto
-            </Link>
+            </button>
           </div>
         </div>
       ) : (
