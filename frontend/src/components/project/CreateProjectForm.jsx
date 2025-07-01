@@ -65,14 +65,16 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
+        {/* Labels e iconos de input */}
         <label
           htmlFor="titulo"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-text-main mb-2"
         >
           Título del Proyecto *
         </label>
         <div className="relative">
-          <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-secondary" />
+          {/* input-field ya definido en index.css, añadir dark: para fondo, texto, placeholder */}
           <input
             id="titulo"
             name="titulo"
@@ -80,7 +82,7 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
             required
             value={formData.titulo}
             onChange={handleChange}
-            className="input-field pl-10"
+            className="input-field pl-10 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-600"
             placeholder="Ej: Desarrollo de aplicación web"
             disabled={loading}
           />
@@ -90,17 +92,18 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
       <div>
         <label
           htmlFor="descripcion"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-text-main mb-2"
         >
           Descripción
         </label>
+        {/* textarea, similar a input-field */}
         <textarea
           id="descripcion"
           name="descripcion"
           rows={4}
           value={formData.descripcion}
           onChange={handleChange}
-          className="input-field resize-none"
+          className="input-field resize-none dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-600"
           placeholder="Describe brevemente el alcance y propósito del proyecto..."
           disabled={loading}
         />
@@ -109,19 +112,20 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
       <div>
         <label
           htmlFor="objetivo_general"
-          className="block text-sm font-medium text-gray-700 mb-2"
+          className="block text-sm font-medium text-text-main mb-2"
         >
           Objetivo General
         </label>
         <div className="relative">
-          <Target className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+          <Target className="absolute left-3 top-3 h-5 w-5 text-text-secondary" />
+          {/* textarea */}
           <textarea
             id="objetivo_general"
             name="objetivo_general"
             rows={3}
             value={formData.objetivo_general}
             onChange={handleChange}
-            className="input-field pl-10 resize-none"
+            className="input-field pl-10 resize-none dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-600"
             placeholder="Define el objetivo principal que se busca alcanzar con este proyecto..."
             disabled={loading}
           />
@@ -132,12 +136,13 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
         <div>
           <label
             htmlFor="fecha_inicio"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-medium text-text-main mb-2"
           >
             Fecha de Inicio *
           </label>
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-secondary" />
+            {/* input date */}
             <input
               id="fecha_inicio"
               name="fecha_inicio"
@@ -145,7 +150,7 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
               required
               value={formData.fecha_inicio}
               onChange={handleChange}
-              className="input-field pl-10"
+              className="input-field pl-10 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
               disabled={loading}
             />
           </div>
@@ -154,12 +159,13 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
         <div>
           <label
             htmlFor="fecha_fin"
-            className="block text-sm font-medium text-gray-700 mb-2"
+            className="block text-sm font-medium text-text-main mb-2"
           >
             Fecha de Finalización *
           </label>
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-secondary" />
+            {/* input date */}
             <input
               id="fecha_fin"
               name="fecha_fin"
@@ -167,20 +173,21 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
               required
               value={formData.fecha_fin}
               onChange={handleChange}
-              min={formData.fecha_inicio} // Evitar fecha de fin anterior a inicio
-              className="input-field pl-10"
+              min={formData.fecha_inicio}
+              className="input-field pl-10 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
               disabled={loading}
             />
           </div>
         </div>
       </div>
 
-      <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
-        {onCancel && ( // Mostrar botón de cancelar solo si se provee la función
+      {/* Botones y borde superior */}
+      <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-600">
+        {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="btn-secondary"
+            className="btn-secondary" // btn-secondary
             disabled={loading}
           >
             Cancelar
@@ -189,10 +196,10 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
         <button
           type="submit"
           disabled={loading}
-          className="btn-primary flex items-center space-x-2"
+          className="btn-primary flex items-center space-x-2" // btn-primary
         >
           {loading ? (
-            <div className="loading-spinner w-4 h-4"></div>
+            <div className="loading-spinner w-4 h-4"></div> // Spinner ya actualizado
           ) : (
             <>
               <Target className="w-4 h-4" />

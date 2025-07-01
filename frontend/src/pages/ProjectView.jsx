@@ -127,7 +127,8 @@ export default function ProjectView() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      // Spinner ya actualizado en index.css
+      <div className="min-h-screen flex items-center justify-center bg-bg-main">
         <div className="loading-spinner"></div>
       </div>
     )
@@ -135,14 +136,14 @@ export default function ProjectView() {
 
   if (!currentProject) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-bg-main text-text-main">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl font-bold text-text-main mb-4">
             Proyecto no encontrado
           </h2>
           <button
             onClick={() => navigate('/')}
-            className="btn-primary"
+            className="btn-primary" // btn-primary
           >
             Volver al inicio
           </button>
@@ -167,12 +168,13 @@ export default function ProjectView() {
       />
     )}
 
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-text-main">
       {/* Header */}
       <div className="mb-8">
+        {/* Botón "Volver" */}
         <button
           onClick={() => navigate('/')}
-          className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors mb-4"
+          className="flex items-center space-x-2 text-text-secondary hover:text-text-main transition-colors mb-4"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Volver a proyectos</span>
@@ -182,19 +184,20 @@ export default function ProjectView() {
           <div className="flex-1">
             {isEditing ? (
               <div className="space-y-4">
+                {/* Input de edición de título */}
                 <input
                   type="text"
                   value={editData.titulo}
                   onChange={(e) => setEditData({...editData, titulo: e.target.value})}
-                  className="text-3xl font-bold bg-transparent border-b-2 border-primary-500 focus:outline-none w-full"
+                  className="text-3xl font-bold bg-transparent border-b-2 border-primary-500 focus:outline-none w-full text-text-main placeholder-text-secondary"
                 />
                 <div className="flex space-x-2">
-                  <button onClick={handleSaveEdit} className="btn-primary text-sm">
+                  <button onClick={handleSaveEdit} className="btn-primary text-sm"> {/* btn-primary */}
                     Guardar
                   </button>
                   <button 
                     onClick={() => setIsEditing(false)} 
-                    className="btn-secondary text-sm"
+                    className="btn-secondary text-sm" // btn-secondary
                   >
                     Cancelar
                   </button>
@@ -202,13 +205,15 @@ export default function ProjectView() {
               </div>
             ) : (
               <div className="flex items-center space-x-3">
-                <h1 className="text-3xl font-bold text-gray-900">
+                {/* Título del proyecto */}
+                <h1 className="text-3xl font-bold text-text-main">
                   {currentProject.titulo}
                 </h1>
                 {isOwner && (
+                  // Botón de editar
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
+                    className="p-2 text-text-secondary hover:text-text-main transition-colors"
                   >
                     <Edit3 className="w-5 h-5" />
                   </button>
@@ -216,7 +221,8 @@ export default function ProjectView() {
               </div>
             )}
             
-            <div className="flex items-center space-x-6 mt-4 text-sm text-gray-600">
+            {/* Fechas y dueño */}
+            <div className="flex items-center space-x-6 mt-4 text-sm text-text-secondary">
               <div className="flex items-center space-x-2">
                 <Calendar className="w-4 h-4" />
                 <span>
@@ -232,9 +238,10 @@ export default function ProjectView() {
           </div>
           
           <div className="flex space-x-3">
+            {/* Botones Compartir y Exportar */}
             <button
               onClick={handleShare}
-              className="btn-outline flex items-center space-x-2"
+              className="btn-outline flex items-center space-x-2" // btn-outline
             >
               <Share2 className="w-4 h-4" />
               <span>Compartir</span>
@@ -242,11 +249,11 @@ export default function ProjectView() {
             
             <button
               onClick={handleExportPDF}
-              className="btn-secondary flex items-center space-x-2"
-              disabled={isExporting} // Deshabilitar mientras se exporta
+              className="btn-secondary flex items-center space-x-2" // btn-secondary
+              disabled={isExporting}
             >
               {isExporting ? (
-                <Loader2 className="w-4 h-4 animate-spin" /> // Ícono de carga
+                <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <Download className="w-4 h-4" />
               )}
@@ -256,8 +263,8 @@ export default function ProjectView() {
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="border-b border-gray-200 mb-8">
+      {/* Navigation Tabs - Bordes y texto de pestañas */}
+      <div className="border-b border-gray-200 dark:border-gray-700 mb-8">
         <nav className="-mb-px flex space-x-8">
           {[
             { id: 'overview', label: 'Resumen', icon: FileText },
@@ -270,8 +277,8 @@ export default function ProjectView() {
               onClick={() => setActiveTab(id)}
               className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeTab === id
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-primary-500 text-primary-600' // Color primario para activa
+                  : 'border-transparent text-text-secondary hover:text-text-main hover:border-gray-300 dark:hover:border-gray-600' // Colores semánticos para inactivas
               }`}
             >
               <Icon className="w-4 h-4" />
@@ -285,41 +292,45 @@ export default function ProjectView() {
       <div className="animate-fade-in">
         {activeTab === 'overview' && (
           <div className="space-y-8">
-            {/* Project Info */}
+            {/* Project Info Cards */}
             <div className="grid md:grid-cols-2 gap-8">
+              {/* Tarjeta Objetivo General - card usa bg-bg-card */}
               <div className="card">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                <h3 className="text-lg font-semibold text-text-main mb-4 flex items-center space-x-2">
                   <Target className="w-5 h-5 text-primary-600" />
                   <span>Objetivo General</span>
                 </h3>
                 {isEditing ? (
+                  // Textarea - input-field ya tiene estilos base, agregar dark:
                   <textarea
                     value={editData.objetivo_general}
                     onChange={(e) => setEditData({...editData, objetivo_general: e.target.value})}
-                    className="input-field resize-none"
+                    className="input-field resize-none dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
                     rows={4}
                   />
                 ) : (
-                  <p className="text-gray-700">
+                  <p className="text-text-secondary">
                     {currentProject.objetivo_general || 'No definido'}
                   </p>
                 )}
               </div>
               
+              {/* Tarjeta Descripción - card usa bg-bg-card */}
               <div className="card">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                <h3 className="text-lg font-semibold text-text-main mb-4 flex items-center space-x-2">
                   <FileText className="w-5 h-5 text-primary-600" />
                   <span>Descripción</span>
                 </h3>
                 {isEditing ? (
+                  // Textarea - input-field
                   <textarea
                     value={editData.descripcion}
                     onChange={(e) => setEditData({...editData, descripcion: e.target.value})}
-                    className="input-field resize-none"
+                    className="input-field resize-none dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
                     rows={4}
                   />
                 ) : (
-                  <p className="text-gray-700">
+                  <p className="text-text-secondary">
                     {currentProject.descripcion || 'No hay descripción disponible'}
                   </p>
                 )}
@@ -340,26 +351,28 @@ export default function ProjectView() {
         )}
 
         {activeTab === 'charts' && (
+          // Tarjeta Visualizaciones - card usa bg-bg-card
           <div className="card">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            <h3 className="text-lg font-semibold text-text-main mb-4">
               Visualizaciones del Proyecto
             </h3>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <button className="p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 transition-colors"
+              {/* Botones para visualizaciones - ajustar bordes y texto */}
+              <button className="p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary-500 transition-colors"
                 onClick={handleShowGantt}
               >
-                <BarChart3 className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-600">Diagrama de Gantt</p>
+                <BarChart3 className="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                <p className="text-sm text-text-secondary">Diagrama de Gantt</p>
               </button>
-              <button className="p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 transition-colors"
+              <button className="p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary-500 transition-colors"
                 onClick={handleShowEDT}>
-                <Target className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-600">Estructura de Desglose de Tareas</p>
+                <Target className="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                <p className="text-sm text-text-secondary">Estructura de Desglose de Tareas</p>
               </button>
-              <button className="p-6 border-2 border-dashed border-gray-300 rounded-lg hover:border-primary-500 transition-colors"
+              <button className="p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary-500 transition-colors"
               onClick={handleShowPresupuesto}>
-                <FileText className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-600">Matriz de Presupuestos</p>
+                <FileText className="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                <p className="text-sm text-text-secondary">Matriz de Presupuestos</p>
               </button>
             </div>
           </div>

@@ -5,20 +5,49 @@
 @layer base {
   html {
     font-family: 'Inter', system-ui, sans-serif;
+    /* Variables CSS para colores base, se pueden sobreescribir por temas */
+    --color-bg-main: theme('colors.bg-main');
+    --color-text-main: theme('colors.text-main');
+    --color-primary-500: theme('colors.primary.500'); /* Para el spinner */
   }
   
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-bg-main text-text-main; /* Usar las variables/clases semánticas de Tailwind */
+  }
+
+  /* Aplicar colores de tema usando las clases en html/body */
+  .theme-bw {
+    --color-bg-main: theme('colors.theme_bw.bg-main');
+    --color-text-main: theme('colors.theme_bw.text-main');
+    --color-primary-500: theme('colors.theme_bw.primary');
+    /* ... otras variables para theme_bw ... */
+  }
+  .theme-red {
+    --color-bg-main: theme('colors.theme_red.bg-main');
+    --color-text-main: theme('colors.theme_red.text-main');
+    --color-primary-500: theme('colors.theme_red.primary');
+    /* ... otras variables para theme_red ... */
+  }
+  .theme-yellow-pastel {
+    --color-bg-main: theme('colors.theme_yellow_pastel.bg-main');
+    --color-text-main: theme('colors.theme_yellow_pastel.text-main');
+    --color-primary-500: theme('colors.theme_yellow_pastel.primary');
+    /* ... otras variables para theme_yellow_pastel ... */
   }
 }
 
 @layer components {
   .btn-primary {
+    /* Usar colores de la paleta 'primary' que se adapta con el tema */
     @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2;
   }
   
   .btn-secondary {
+    /* Ajustar para que use colores más neutrales o que se adapten */
     @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2;
+    /* Para temas oscuros o de alto contraste, esto podría necesitar clases específicas del tema */
+    /* Ejemplo: .dark .btn-secondary { @apply bg-gray-700 hover:bg-gray-600 text-gray-200; } */
+    /* O definir .btn-secondary-themed que use variables CSS */
   }
   
   .btn-outline {
@@ -27,44 +56,51 @@
   
   .input-field {
     @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200;
+    /* Considerar colores de borde y fondo para temas */
+    /* @apply bg-bg-card border-border-color text-text-main; */
   }
   
   .card {
-    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+    @apply bg-bg-card rounded-lg shadow-sm border border-gray-200 p-6; /* Usar bg-bg-card */
+    /* border-color podría ser también una variable */
+    /* @apply border-border-color; */
   }
   
   .table-cell {
-    @apply px-4 py-3 text-sm border-b border-gray-200;
+    @apply px-4 py-3 text-sm border-b border-gray-200; /* text-text-main o text-text-secondary, border-border-color */
   }
   
   .table-header {
-    @apply px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-gray-50;
+    @apply px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 bg-gray-50; /* text-text-secondary, border-border-color, bg-bg-main o bg-bg-card */
   }
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - puede necesitar ajustes por tema */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: theme('colors.gray.100'); /* Un color base claro */
+  /* .theme-bw & { background: theme('colors.gray.300'); } */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
+  background: theme('colors.gray.400'); /* Un color base medio */
   border-radius: 3px;
+  /* .theme-bw & { background: theme('colors.gray.600'); } */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: theme('colors.gray.500'); /* Un color base medio-oscuro */
+  /* .theme-bw & { background: theme('colors.gray.700'); } */
 }
 
 /* Loading animation */
 .loading-spinner {
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid #3b82f6;
+  border: 2px solid theme('colors.gray.300'); /* Color de fondo del spinner */
+  border-top: 2px solid var(--color-primary-500); /* Color primario del tema */
   border-radius: 50%;
   width: 20px;
   height: 20px;

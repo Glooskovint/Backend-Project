@@ -45,35 +45,41 @@ const JoinProjectModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
+    // Overlay
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+      {/* Contenedor del modal - bg-bg-card y text-text-main */}
+      <div className="bg-bg-card p-6 rounded-lg shadow-xl w-full max-w-md text-text-main">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Unirse a un Proyecto</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <h2 className="text-xl font-semibold text-text-main">Unirse a un Proyecto</h2>
+          {/* Botón de cerrar */}
+          <button onClick={onClose} className="text-text-secondary hover:text-text-main">
             <X size={24} />
           </button>
         </div>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="inviteLink" className="block text-sm font-medium text-gray-700 mb-1">
+            {/* Label e icono del input */}
+            <label htmlFor="inviteLink" className="block text-sm font-medium text-text-main mb-1">
               Enlace de Invitación
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Link className="h-5 w-5 text-gray-400" />
+                <Link className="h-5 w-5 text-text-secondary" />
               </div>
+              {/* Input - input-field y dark: variantes */}
               <input
                 type="text"
                 id="inviteLink"
                 value={inviteLink}
                 onChange={(e) => setInviteLink(e.target.value)}
                 placeholder="Pega el enlace de invitación aquí"
-                className="input-field pl-10"
+                className="input-field pl-10 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-600"
                 disabled={isLoading}
               />
             </div>
           </div>
           <div className="flex justify-end space-x-3">
+            {/* Botones - btn-secondary y btn-primary */}
             <button
               type="button"
               onClick={onClose}
