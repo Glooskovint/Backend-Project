@@ -2,14 +2,8 @@ const projectService = require('../services/project.service');
 
 exports.getAll = async (req, res) => {
     try {
-        // Asumimos que el userId se obtiene de alguna forma de autenticación,
-        // por ejemplo, req.user.firebase_uid si usas un middleware de autenticación.
-        // Por ahora, lo tomaré del query para simplificar, pero esto debería ser seguro.
-        const { userId } = req.query;
-        if (!userId) {
-            return res.status(400).json({ error: 'userId es requerido' });
-        }
-        const proyectos = await projectService.getAll(userId);
+        const { ownerId } = req.query;
+        const proyectos = await projectService.getAll(ownerId);
         res.json(proyectos);
     } catch (error) {
         console.error(error);
@@ -93,3 +87,13 @@ exports.joinByInvite = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+exports.getSharedProjects = async (req, res, next) => {
+  try {
+    const { userId } = req.params
+    const shared = await projectService.getSharedProjects(userId)
+    res.json(shared)
+  } catch (error) {
+    next(error)
+  }
+}
