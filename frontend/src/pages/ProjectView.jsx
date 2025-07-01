@@ -226,7 +226,7 @@ export default function ProjectView() {
               </div>
               <div className="flex items-center space-x-2">
                 <Users className="w-4 h-4" />
-                <span>ID: {currentProject.id}</span>
+                <span>Dueño: {currentProject.owner?.nombre || 'N/A'}</span>
               </div>
             </div>
           </div>

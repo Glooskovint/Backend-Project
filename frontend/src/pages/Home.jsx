@@ -142,7 +142,7 @@ export default function Home() {
                   {project.titulo}
                 </h3>
                 <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                  ID: {project.id}
+                  Dueño: {project.owner?.nombre || 'N/A'}
                 </span>
               </div>
 
@@ -194,7 +194,7 @@ export default function Home() {
                     {project.titulo}
                   </h3>
                   <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                    ID: {project.id}
+                    Dueño: {project.owner?.nombre || 'N/A'}
                   </span>
                 </div>
                 {project.descripcion && (

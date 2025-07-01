@@ -5,11 +5,27 @@ const prisma = require('../utils/db');
 exports.getAll = async (ownerId) => {
     return await prisma.proyecto.findMany({
         where: ownerId ? { ownerId } : undefined,
+        include: {
+            owner: {
+                select: {
+                    nombre: true
+                }
+            }
+        }
     });
 };
 
 exports.getById = async (id) => {
-    return await prisma.proyecto.findUnique({ where: { id } });
+    return await prisma.proyecto.findUnique({
+        where: { id },
+        include: {
+            owner: {
+                select: {
+                    nombre: true
+                }
+            }
+        }
+    });
 };
 
 exports.create = async (data) => {
