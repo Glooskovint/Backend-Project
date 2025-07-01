@@ -8,14 +8,17 @@ import {
   User, 
   Settings,
   Menu,
-  X
+  X,
+  UserPlus // Icono para "Unirse a Proyecto"
 } from 'lucide-react'
 import { useState } from 'react'
+import JoinProjectModal from '../project/JoinProjectModal' // Importar el modal
 
 export default function Navbar() {
   const { user, logout } = useAuthStore()
   const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isJoinModalOpen, setIsJoinModalOpen] = useState(false) // Estado para el modal
 
   const handleLogout = async () => {
     await logout()
@@ -28,6 +31,7 @@ export default function Navbar() {
   }
 
   return (
+    <>
     <nav className="fixed top-0 left-0 right-0 bg-white shadow-sm border-b border-gray-200 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
@@ -51,6 +55,14 @@ export default function Navbar() {
                   <Plus className="w-4 h-4" />
                   <span>Crear Proyecto</span>
                 </Link>
+
+                <button
+                  onClick={() => setIsJoinModalOpen(true)}
+                  className="flex items-center space-x-2 btn-secondary"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span>Unirse a Proyecto</span>
+                </button>
                 
                 <div className="flex items-center space-x-2 text-gray-700">
                   <User className="w-4 h-4" />
@@ -114,6 +126,17 @@ export default function Navbar() {
                     <Plus className="w-4 h-4" />
                     <span>Crear Proyecto</span>
                   </Link>
+
+                  <button
+                    onClick={() => {
+                      setIsJoinModalOpen(true);
+                      setIsMenuOpen(false);
+                    }}
+                    className="flex items-center space-x-2 btn-secondary w-full justify-center"
+                  >
+                    <UserPlus className="w-4 h-4" />
+                    <span>Unirse a Proyecto</span>
+                  </button>
                   
                   <button className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors px-2 py-2">
                     <Settings className="w-5 h-5" />
@@ -150,5 +173,10 @@ export default function Navbar() {
         )}
       </div>
     </nav>
+    <JoinProjectModal
+      isOpen={isJoinModalOpen}
+      onClose={() => setIsJoinModalOpen(false)}
+    />
+    </>
   )
 }

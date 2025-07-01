@@ -1,25 +1,38 @@
-import { useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react' // Añadir useState
+import { Link, useNavigate } from 'react-router-dom' // Añadir useNavigate
 import { useAuthStore } from '../stores/authStore'
 import { useProjectStore } from '../stores/projectStore'
 import { Plus, Calendar, Users, Target } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import CreateProjectModal from '../components/project/CreateProjectModal' // Importar el modal
 
 export default function Home() {
   const { user } = useAuthStore()
   const { projects, loading, fetchProjects } = useProjectStore()
+  const navigate = useNavigate()
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   useEffect(() => {
-    if (user) {
+    if (user && user.firebase_uid) { // Asegurarse que user.firebase_uid exista
       fetchProjects(user.firebase_uid)
     }
   }, [user, fetchProjects])
 
-  console.log('User:', user)
+  const ownedProjects = projects.filter(p => p.ownerId === user?.firebase_uid);
+  const sharedProjects = projects.filter(p => p.ownerId !== user?.firebase_uid);
+
+  const handleStartNow = () => {
+    if (user) {
+      setIsCreateModalOpen(true);
+    } else {
+      navigate('/login');
+    }
+  };
 
   if (!user) {
     return (
+      <>
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-blue-100">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <div className="animate-fade-in">
@@ -33,10 +46,16 @@ export default function Home() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Link to="/login" className="btn-primary text-lg px-8 py-3">
+              <button
+                onClick={handleStartNow}
+                className="btn-primary text-lg px-8 py-3"
+              >
                 Comenzar Ahora
-              </Link>
-              <Link to="/login" className="btn-outline text-lg px-8 py-3">
+              </button>
+              <Link
+                to="/login"
+                className="btn-outline text-lg px-8 py-3"
+              >
                 Iniciar Sesión
               </Link>
             </div>
@@ -69,10 +88,18 @@ export default function Home() {
           </div>
         </div>
       </div>
+      {/* Renderizar el modal de creación de proyecto si el usuario está autenticado */}
+      {/* Esto es para el caso en que el usuario esté en la landing page pero ya logueado (poco común pero posible) */}
+      <CreateProjectModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
+      </>
     )
   }
 
   return (
+    <>
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex justify-between items-center mb-8">
         <div>
@@ -97,7 +124,7 @@ export default function Home() {
         <div className="flex justify-center py-12">
           <div className="loading-spinner"></div>
         </div>
-      ) : projects.length === 0 ? (
+      ) : (ownedProjects.length === 0 && sharedProjects.length === 0) ? (
         <div className="text-center py-12">
           <div className="card max-w-md mx-auto">
             <Target className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -113,10 +140,48 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map((project) => (
-            <Link
-              key={project.id}
+        <>
+          {/* Sección Mis Proyectos */}
+          {ownedProjects.length > 0 && (
+            <div className="mb-12">
+              {/* El título "Mis Proyectos" ya está arriba, así que no lo repetimos aquí salvo que se quiera un subtítulo */}
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {ownedProjects.map((project) => (
+                  <ProjectCard key={project.id} project={project} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Sección Proyectos Compartidos Conmigo */}
+          {sharedProjects.length > 0 && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800 mb-6">
+                Proyectos Compartidos Conmigo
+              </h2>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {sharedProjects.map((project) => (
+                  <ProjectCard key={project.id} project={project} isShared={true} />
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+    <CreateProjectModal
+      isOpen={isCreateModalOpen}
+      onClose={() => setIsCreateModalOpen(false)}
+    />
+    </>
+  )
+}
+
+// Componente ProjectCard para reutilizar la lógica de visualización de tarjetas de proyecto
+const ProjectCard = ({ project, isShared = false }) => {
+  return (
+    <Link
+      key={project.id}
               to={`/project/${project.id}`}
               className="card hover:shadow-md transition-shadow duration-200 group"
             >
@@ -149,11 +214,12 @@ export default function Home() {
                 <span className="text-xs text-primary-600 font-medium">
                   Ver detalles →
                 </span>
+                {isShared && project.owner && (
+                  <span className="block text-xs text-gray-400 mt-1">
+                    Propietario: {project.owner.nombre || project.owner.email}
+                  </span>
+                )}
               </div>
             </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
+  );
+};

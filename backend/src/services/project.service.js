@@ -1,15 +1,57 @@
 const { generateInviteToken } = require('../utils/token');
 const prisma = require('../utils/db');
 
-// Devuelve todos los proyectos, con filtro opcional por ownerId
-exports.getAll = async (ownerId) => {
-    return await prisma.proyecto.findMany({
-        where: ownerId ? { ownerId } : undefined,
+// Devuelve todos los proyectos para un usuario dado:
+// - Proyectos donde el usuario es el propietario (ownerId)
+// - Proyectos donde el usuario es miembro (a través de MiembroProyecto)
+exports.getAll = async (userId) => {
+    if (!userId) {
+        return []; // O manejar como un error, según la lógica de negocio
+    }
+
+    const proyectos = await prisma.proyecto.findMany({
+        where: {
+            OR: [
+                { ownerId: userId }, // Proyectos propios
+                { miembros: { some: { usuarioId: userId } } } // Proyectos donde es miembro
+            ]
+        },
+        include: {
+            owner: { // Incluir detalles del propietario
+                select: {
+                    firebase_uid: true,
+                    nombre: true,
+                    email: true
+                }
+            },
+            miembros: { // Opcional: si necesitas info de miembros en la lista general
+                include: {
+                    usuario: {
+                        select: {
+                            firebase_uid: true,
+                            nombre: true,
+                            email: true
+                        }
+                    }
+                }
+            }
+            // No incluimos 'objectives' aquí para mantener la carga ligera,
+            // se cargarán al ver un proyecto específico.
+        },
+        orderBy: {
+            fecha_inicio: 'desc' // Opcional: ordenar los proyectos
+        }
     });
+    return proyectos;
 };
 
 exports.getById = async (id) => {
-    return await prisma.proyecto.findUnique({ where: { id } });
+    return await prisma.proyecto.findUnique({
+        where: { id },
+        include: {
+            objectives: true, // Incluir objetivos específicos
+        }
+    });
 };
 
 exports.create = async (data) => {

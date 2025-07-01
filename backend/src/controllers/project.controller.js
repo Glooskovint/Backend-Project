@@ -2,8 +2,14 @@ const projectService = require('../services/project.service');
 
 exports.getAll = async (req, res) => {
     try {
-        const { ownerId } = req.query;
-        const proyectos = await projectService.getAll(ownerId);
+        // Asumimos que el userId se obtiene de alguna forma de autenticación,
+        // por ejemplo, req.user.firebase_uid si usas un middleware de autenticación.
+        // Por ahora, lo tomaré del query para simplificar, pero esto debería ser seguro.
+        const { userId } = req.query;
+        if (!userId) {
+            return res.status(400).json({ error: 'userId es requerido' });
+        }
+        const proyectos = await projectService.getAll(userId);
         res.json(proyectos);
     } catch (error) {
         console.error(error);
