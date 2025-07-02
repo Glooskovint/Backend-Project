@@ -1,3 +1,9 @@
 node_modules
 npm-debug.log
 .env
+.git
+.gitignore
+# Dockerfile is needed by the build context, so it is NOT ignored.
+# Any other specific files or directories to ignore for the backend build
+# e.g., /tests if you don't run them in the image
+# e.g., /docs
