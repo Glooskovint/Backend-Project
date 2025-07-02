@@ -1,7 +1,9 @@
 import { Routes, Route } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useAuthStore } from './stores/authStore'
-import { useThemeStore } from './stores/themeStore'
+// Ya no necesitamos importar useThemeStore aquí para la carga inicial del tema,
+// pero aún podría ser necesario para el ThemeSwitcher o si otros componentes lo usan.
+// import { useThemeStore } from './stores/themeStore';
 import Navbar from './components/layout/Navbar'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import Home from './pages/Home'
@@ -11,28 +13,28 @@ import ProjectView from './pages/ProjectView'
 import JoinProject from './pages/JoinProject'
 
 function App() {
-  const { initializeAuth } = useAuthStore()
-  const { loadThemeFromStorage, currentTheme } // <-- currentTheme no se necesita aquí si el useEffect de abajo se elimina o ajusta
-    = useThemeStore((state) => ({ // Seleccionar solo lo necesario
-        loadThemeFromStorage: state.loadThemeFromStorage,
-        currentTheme: state.currentTheme // Necesario para el segundo useEffect
-      }));
+  const { initializeAuth } = useAuthStore();
+  // const { currentTheme } = useThemeStore((state) => ({ currentTheme: state.currentTheme })); // Ya no es estrictamente necesario para aplicar el tema inicial
 
   useEffect(() => {
-    initializeAuth()
-    loadThemeFromStorage() // Cargar y aplicar la clase del tema al iniciar la app
-  }, [initializeAuth, loadThemeFromStorage])
+    initializeAuth();
+    // La lógica de carga y aplicación del tema ahora es manejada por onRehydrateStorage en themeStore.js
+    // por lo que no necesitamos llamar a loadThemeFromStorage() aquí.
+  }, [initializeAuth]);
 
-  // Este useEffect asegura que la clase en documentElement se mantenga sincronizada
-  // si currentTheme cambia por cualquier motivo (incluso fuera de setTheme, aunque es raro).
-  // Con la lógica actual de setTheme y loadThemeFromStorage, esto es una redundancia segura.
+  // Este useEffect podría seguir siendo útil si currentTheme se cambia programáticamente
+  // de formas que no pasen por setTheme (lo cual es inusual).
+  // Por ahora, lo comentaremos para ver si onRehydrateStorage es suficiente.
+  // Si el ThemeSwitcher funciona bien, y la carga inicial también, este useEffect es redundante.
+  /*
   useEffect(() => {
-    if (currentTheme && currentTheme.class) { // Verificar que currentTheme exista
+    if (currentTheme && currentTheme.class) {
       document.documentElement.className = currentTheme.class;
-    } else if (currentTheme) { // Si currentTheme existe pero .class es '' (default)
+    } else if (currentTheme) {
       document.documentElement.className = '';
     }
   }, [currentTheme]);
+  */
 
   return (
     // La clase del tema ya está en document.documentElement.

@@ -10,26 +10,23 @@ const themes = [
 
 export const useThemeStore = create(
   persist(
-    (set, get) => ({ // <--- Añadido 'get' para acceder al estado actual si es necesario
+    (set, get) => ({
       availableThemes: themes,
       currentTheme: themes[0], // Azul (Default) como tema inicial
       setTheme: (themeId) => {
         const selectedTheme = themes.find(t => t.id === themeId);
         if (selectedTheme) {
           set({ currentTheme: selectedTheme });
-          // Aplicar la clase al elemento <html> (document.documentElement)
           document.documentElement.className = selectedTheme.class;
         }
       },
-      loadThemeFromStorage: () => {
-        // El middleware 'persist' ya se encarga de hidratar el estado 'currentTheme' desde localStorage.
-        // Esta función ahora solo necesita asegurar que la clase correcta se aplique a <html> al inicio.
-        const state = get(); // Usamos get() para obtener el estado más reciente post-hidratación.
+      // Esta función se llama para aplicar el tema después de la hidratación.
+      _applyThemeToDocument: () => {
+        const state = get(); // Obtener el estado actual (ya hidratado)
         if (state.currentTheme && state.currentTheme.class) {
           document.documentElement.className = state.currentTheme.class;
         } else {
-          // Si es el tema por defecto (clase vacía) o no hay tema, asegurar que no haya clases de tema.
-          document.documentElement.className = '';
+          document.documentElement.className = ''; // Tema por defecto
         }
       }
     }),
@@ -37,9 +34,19 @@ export const useThemeStore = create(
       name: 'app-theme',
       storage: localStorage,
       partialize: (state) => ({ currentTheme: state.currentTheme }),
+      // onRehydrateStorage se llama una vez que el almacenamiento ha sido leído y el estado está listo.
+      onRehydrateStorage: () => {
+        return (state, error) => {
+          if (state) {
+            // Llamar a una acción interna para aplicar el tema al documento
+            // Esto asegura que se haga con el estado ya hidratado.
+            state._applyThemeToDocument();
+          }
+        }
+      }
     }
   )
 );
 
-// No es necesario llamar a loadThemeFromStorage aquí globalmente.
-// Se debe llamar en App.jsx después de que el componente se monte.
+// Ya no es necesario exportar o llamar a loadThemeFromStorage desde App.jsx explícitamente para esto,
+// onRehydrateStorage se encargará de aplicar el tema.
