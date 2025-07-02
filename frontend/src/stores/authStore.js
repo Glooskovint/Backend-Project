@@ -86,16 +86,5 @@ export const useAuthStore = create((set, get) => ({
       toast.error('Error al cerrar sesión')
       throw error
     }
-  },
-
-  loginAnonymously: async () => {
-    try {
-      const userCredential = await signInAnonymously(auth)
-      toast.success('Sesión anónima iniciada correctamente')
-      return userCredential.user
-    } catch (error) {
-      toast.error('Error al iniciar sesión anónima: ' + error.message)
-      throw error
-    }
   }
 }))
