@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useAuthStore } from './stores/authStore'
-import { useThemeStore } from './stores/themeStore' // Importar el store de temas
+import { useThemeStore } from './stores/themeStore'
 import Navbar from './components/layout/Navbar'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import Home from './pages/Home'
@@ -12,31 +12,34 @@ import JoinProject from './pages/JoinProject'
 
 function App() {
   const { initializeAuth } = useAuthStore()
-  const { loadThemeFromStorage, currentTheme } = useThemeStore() // Obtener la función y el tema actual
+  const { loadThemeFromStorage, currentTheme } // <-- currentTheme no se necesita aquí si el useEffect de abajo se elimina o ajusta
+    = useThemeStore((state) => ({ // Seleccionar solo lo necesario
+        loadThemeFromStorage: state.loadThemeFromStorage,
+        currentTheme: state.currentTheme // Necesario para el segundo useEffect
+      }));
 
   useEffect(() => {
     initializeAuth()
-    loadThemeFromStorage() // Cargar y aplicar el tema al iniciar la app
+    loadThemeFromStorage() // Cargar y aplicar la clase del tema al iniciar la app
   }, [initializeAuth, loadThemeFromStorage])
 
-  // Efecto para actualizar la clase del body cuando currentTheme cambie (opcional, ya que setTheme lo hace)
-  // Pero es bueno para asegurar consistencia si el tema cambia por fuera del setTheme (ej. devtools)
+  // Este useEffect asegura que la clase en documentElement se mantenga sincronizada
+  // si currentTheme cambia por cualquier motivo (incluso fuera de setTheme, aunque es raro).
+  // Con la lógica actual de setTheme y loadThemeFromStorage, esto es una redundancia segura.
   useEffect(() => {
-    if (currentTheme.class) {
+    if (currentTheme && currentTheme.class) { // Verificar que currentTheme exista
       document.documentElement.className = currentTheme.class;
-    } else {
+    } else if (currentTheme) { // Si currentTheme existe pero .class es '' (default)
       document.documentElement.className = '';
     }
   }, [currentTheme]);
 
   return (
-    // La clase del tema se aplica en document.documentElement,
-    // aquí podríamos querer aplicar colores base de texto y fondo que los temas sobrescribirán.
-    // Tailwind espera que las clases de tema estén en un elemento padre (como <html> o <body>)
-    // para que las utilidades de color como `bg-theme-bg-main` o `text-theme-text-main` funcionen.
-    // Si usamos `darkMode: 'class'`, Tailwind buscará `.dark` en `<html>`.
-    // Para nuestros temas personalizados, las clases como `theme-red` también se aplican a `<html>`.
-    <div className="min-h-screen bg-bg-main text-text-main"> {/* Usar colores semánticos */}
+    // La clase del tema ya está en document.documentElement.
+    // Tailwind usará esto para aplicar los estilos condicionales (theme-bw:, theme-red:, etc.)
+    // y las variables CSS definidas en :root o .theme-*.
+    // Las clases bg-bg-main y text-text-main aquí usarán las variables CSS del tema actual.
+    <div className="min-h-screen bg-bg-main text-text-main">
       <Navbar />
       <main className="pt-16">
         <Routes>
