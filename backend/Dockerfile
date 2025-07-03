@@ -3,19 +3,19 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Install build dependencies including Python and make for node-gyp, and git
+# Install build dependencies
 RUN apk add --no-cache python3 make g++ git
 
 # Copy package.json and package-lock.json
 COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN npm install --production
-
-# Copy prisma schema
+# ✅ Copiamos el schema.prisma antes de instalar
 COPY prisma ./prisma/
 
-# Generate Prisma client
+# ✅ Ahora sí, instalamos dependencias (y postinstall funciona)
+RUN npm install --omit=dev
+
+# Generamos cliente de Prisma (opcional si postinstall ya lo hizo)
 RUN npx prisma generate
 
 # Copy the rest of the application code
@@ -26,23 +26,13 @@ FROM node:18-alpine AS production
 
 WORKDIR /app
 
-# Create a non-root user and group
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-# Install netcat-openbsd for the wait script and dumb-init
 RUN apk add --no-cache netcat-openbsd dumb-init
 
-# Copy built artifacts from builder stage
 COPY --from=builder /app ./
 
-# Ensure correct ownership of application files
 RUN chown -R appuser:appgroup /app
-
-# Switch to non-root user
 USER appuser
 
-# Expose port 5000 (as defined in your original Dockerfile and docker-compose)
 EXPOSE 5000
-
-# Use dumb-init to handle signals properly
 CMD ["dumb-init", "node", "src/server.js"]

@@ -1,77 +1,67 @@
-services: # Removed version: '3.8' as it's obsolete
+services:
   db:
-    image: postgres:15-alpine # Changed to alpine for smaller size
+    image: postgres:15-alpine
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-user} # Added default values
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password} # Added default values
-      POSTGRES_DB: ${POSTGRES_DB:-mydb} # Added default values
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-mydb}
     ports:
-      - "5432:5432" # Kept for direct DB access if needed
+      - "127.0.0.1:5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
-      - app-network # Changed network name
+      - app-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-mydb}"] # Updated healthcheck
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-user} -d ${POSTGRES_DB:-mydb}" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
   backend:
-    build:
-      context: ./backend # Explicit context
-      dockerfile: Dockerfile # Explicit Dockerfile
-    restart: always
+    build: ./backend
     volumes:
-      # - ./backend:/app # REMOVED: Source code mount, not for production
-      - /app/node_modules # Keep to avoid node_modules being overwritten if a local volume is ever mapped to /app for debugging
-    # ports: # REMOVED: Ports are not exposed directly to host; Nginx will handle it.
-    expose:
-      - "5000" # Expose port internally for Nginx
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - "127.0.0.1:5000:5000"
     environment:
-      DATABASE_URL: ${DATABASE_URL:-postgresql://user:password@db:5432/mydb?schema=public} # Added default
-      NODE_ENV: production # Added NODE_ENV
+      DATABASE_URL: ${DATABASE_URL}
     depends_on:
-      db:
-        condition: service_healthy # Wait for DB to be healthy
+      - db
     command: >
       sh -c "
-        echo 'Waiting for database...'
-        # netcat (nc) must be available in the backend image
-        wait_timeout=60; # Renamed variable to avoid conflict
+        echo 'Esperando a la base de datos...';
+        timeout=30;
         while ! nc -z db 5432; do
           sleep 1;
-          wait_timeout=$((wait_timeout - 1)); # Renamed variable
-          if [ $wait_timeout -eq 0 ]; then # Renamed variable
-            echo 'Error: Database not responding.';
+          timeout=$((timeout - 1));
+          if [ $timeout -eq 0 ]; then
+            echo 'Error: Base de datos no responde.';
             exit 1;
           fi;
         done;
-        echo 'Database ready. Applying migrations...';
-        # npx prisma generate # This should be in Dockerfile build stage
+        echo 'Base de datos disponible. Ejecutando migraciones...';
+        npx prisma generate &&
         npx prisma migrate deploy &&
-        echo 'Migrations complete. Starting server...';
-        dumb-init node src/server.js # Added dumb-init
+        node src/server.js
       "
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"] # Assuming /health endpoint exists
+      test: [ "CMD-SHELL", "curl -f http://localhost:5000/health || exit 1" ]
       interval: 30s
-      timeout: 10s # Increased timeout
       retries: 3
-      start_period: 30s # Increased start_period to allow for migrations
+      start_period: 10s
     networks:
-      - app-network # Changed network name
+      - app-network
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile # This Dockerfile should just build assets into /app/dist
-    # This service's purpose is to build the frontend assets and make them available
-    # in the 'frontend-build' volume. It doesn't need to run a persistent command.
-    # Docker Compose will run the build, and the volume will be populated.
+      dockerfile: Dockerfile
+    image: frontend-builder
+    container_name: frontend-builder
     volumes:
-      - frontend-build:/app/dist # Output build artifacts to this named volume
+      - frontend-build:/usr/share/nginx/html
     networks:
       - app-network
 
@@ -79,23 +69,20 @@ services: # Removed version: '3.8' as it's obsolete
     image: nginx:stable-alpine
     restart: always
     ports:
-      - "80:80" # Map host port 80 to Nginx container port 80
-      # - "443:443" # Uncomment for HTTPS in the future
+      - "127.0.0.1:80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro # Mount custom Nginx config (read-only)
-      - frontend-build:/usr/share/nginx/html:ro # Mount frontend assets from named volume (read-only)
-      # For SSL in the future:
-      # - ./nginx/certs:/etc/nginx/certs:ro
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - frontend-build:/usr/share/nginx/html:ro
     depends_on:
-      - backend # Nginx depends on backend being ready (or at least started)
-      - frontend # Nginx depends on frontend build being complete
+      - backend
+      - frontend
     networks:
       - app-network
 
 volumes:
   postgres-data:
-  frontend-build: {} # Define the named volume for frontend build artifacts
+  frontend-build:
 
 networks:
-  app-network: # Define the shared network
+  app-network:
     driver: bridge
