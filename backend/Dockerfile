@@ -1,19 +1,15 @@
-FROM node:18
+FROM node:18-alpine
 
 WORKDIR /app
 
+# Instalar netcat-openbsd para el healthcheck de docker-compose
+# Necesario para que `nc -z db 5432` funcione en el script de inicio del backend en docker-compose.yml
+RUN apk add --no-cache netcat-openbsd
+
 COPY package.json package-lock.json ./
-
-# Instalar netcat-openbsd antes de copiar todo
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends netcat-openbsd && \
-    rm -rf /var/lib/apt/lists/*
-
-# Copiar el resto de la app después
-COPY . .
-
-# Instalar dependencias una vez que todo el código está en el contenedor
 RUN npm install
+
+COPY . .
 
 EXPOSE 5000
 
