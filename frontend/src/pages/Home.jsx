@@ -205,9 +205,6 @@ export default function Home() {
                   <h3 className="text-lg font-semibold text-text-main group-hover:text-primary-600 transition-colors">
                     {project.titulo}
                   </h3>
-                  <span className="text-xs text-text-secondary bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                    Dueño: {project.owner?.nombre || 'N/A'}
-                  </span>
                 </div>
                 {project.descripcion && (
                   <p className="text-text-secondary text-sm mb-4 line-clamp-2">
