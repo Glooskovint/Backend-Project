@@ -18,6 +18,6 @@ WORKDIR /app
 
 COPY --from=build /app/dist ./dist
 
-EXPOSE 3000
+EXPOSE 5173
 
 CMD ["serve", "-s", "dist"]
