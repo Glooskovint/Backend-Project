@@ -94,7 +94,7 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
           htmlFor="descripcion"
           className="block text-sm font-medium text-text-main mb-2"
         >
-          Descripción
+          Descripción (Opcional)
         </label>
         {/* textarea, similar a input-field */}
         <textarea
@@ -114,7 +114,7 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
           htmlFor="objetivo_general"
           className="block text-sm font-medium text-text-main mb-2"
         >
-          Objetivo General
+          Objetivo General (Opcional)
         </label>
         <div className="relative">
           <Target className="absolute left-3 top-3 h-5 w-5 text-text-secondary" />

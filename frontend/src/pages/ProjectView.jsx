@@ -269,8 +269,8 @@ export default function ProjectView() {
           {[
             { id: 'overview', label: 'Resumen', icon: FileText },
             { id: 'tasks', label: 'Tareas', icon: Table },
-            { id: 'members', label: 'Miembros', icon: Users },
-            { id: 'charts', label: 'Visualizaciones', icon: BarChart3 }
+            { id: 'charts', label: 'Visualizaciones', icon: BarChart3 },
+            { id: 'members', label: 'Miembros', icon: Users }
           ].map(({ id, label, icon: Icon }) => (
             <button
               key={id}

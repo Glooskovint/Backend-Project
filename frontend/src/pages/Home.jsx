@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
 import { useProjectStore } from "../stores/projectStore";
-import { Plus, Calendar, Users, Target } from "lucide-react";
+import { Plus, Calendar, Users, Target, LogInIcon } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -36,8 +36,8 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <div className="animate-fade-in">
             {/* Usar text-text-main y text-primary-600 para el título */}
-            <h1 className="text-5xl font-bold text-text-main mb-6">
-              Gestión de Proyectos
+            <h1 className="text-5xl font-bold text-text-main mb-6 mt-6">
+              Planificación y Gestión de Proyectos
               <span className="text-primary-600"> Colaborativa</span>
             </h1>
             {/* Usar text-text-secondary para el párrafo */}
@@ -47,11 +47,10 @@ export default function Home() {
               real.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Link to="/login" className="btn-outline text-lg px-8 py-3">
-                {" "}
-                {/* btn-outline definido en index.css */}
-                Iniciar Sesión
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+              <Link to="/login" className="flex items-center space-x-2 btn-primary text-lg px-8 py-3">
+                <LogInIcon className="w-4 h-4" />
+                <span>Iniciar Sesión</span>
               </Link>
             </div>
 

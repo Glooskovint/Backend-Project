@@ -9,6 +9,10 @@ import {
   Menu,
   X,
   UserPlus,
+  Briefcase,
+  FolderClock,
+  FolderClosed,
+  Folders,
 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import JoinProjectModal from "../project/JoinProjectModal";
@@ -55,8 +59,8 @@ export default function Navbar() {
               to="/"
               className="flex items-center space-x-2 text-xl font-semibold text-primary-600 hover:text-primary-500 transition-colors"
             >
-              <Home className="w-6 h-6" />
-              <span className="hidden sm:inline">Gestión de Proyectos</span>
+              <Folders className="w-6 h-6" />
+              <span>Planificador de Proyectos</span>
             </Link>
 
             {/* Desktop Buttons */}
@@ -100,13 +104,6 @@ export default function Navbar() {
               ) : (
                 <>
                   <ThemeSwitcher />
-                  <Link
-                    to="/login"
-                    className="flex items-center space-x-1.5 px-3 py-2 rounded-md btn-primary hover:bg-opacity-90 transition-all"
-                  >
-                    <LogIn className="w-4 h-4" />
-                    <span className="text-sm font-medium">Iniciar Sesión</span>
-                  </Link>
                 </>
               )}
             </div>
@@ -147,14 +144,6 @@ export default function Navbar() {
 
                     <hr className="border-gray-200 dark:border-gray-700 my-1" />
 
-                    <button
-                      onClick={() => setIsJoinModalOpen(true)}
-                      className="flex items-center space-x-2 w-full px-3 py-2 rounded-md btn-secondary justify-start"
-                    >
-                      <UserPlus className="w-4 h-4" />
-                      <span>Unirse a Proyecto</span>
-                    </button>
-
                     <Link
                       to="/create-project"
                       className="flex items-center space-x-2 w-full px-3 py-2 rounded-md btn-primary justify-start"
@@ -163,6 +152,14 @@ export default function Navbar() {
                       <Plus className="w-4 h-4" />
                       <span>Crear Proyecto</span>
                     </Link>
+
+                    <button
+                      onClick={() => setIsJoinModalOpen(true)}
+                      className="flex items-center space-x-2 w-full px-3 py-2 rounded-md btn-secondary justify-start"
+                    >
+                      <UserPlus className="w-4 h-4" />
+                      <span>Unirse a Proyecto</span>
+                    </button>
 
                     <button
                       onClick={handleLogout}
@@ -178,15 +175,6 @@ export default function Navbar() {
                       <div className="flex items-center space-x-2 px-3 py-2 justify-center">
                         <ThemeSwitcher />
                       </div>
-
-                      <Link
-                        to="/login"
-                        className="flex items-center space-x-2 w-full px-3 py-2 rounded-md btn-primary justify-center"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <LogIn className="w-4 h-4" />
-                        <span>Iniciar Sesión</span>
-                      </Link>
                     </div>
                   </>
                 )}
