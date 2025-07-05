@@ -138,7 +138,7 @@ exports.joinUserByToken = async (token, userId) => {
     return proyecto;
 };
 
-exports.getSharedProjects = async (userId) => {
+exports.getSharedProjects = async (userId) => { 
   return prisma.proyecto.findMany({
     where: {
       AND: [
@@ -146,5 +146,12 @@ exports.getSharedProjects = async (userId) => {
         { miembros: { some: { usuarioId: userId } } },
       ],
     },
-  })
-}
+    include: {
+      owner: {
+        select: {
+          nombre: true
+        }
+      }
+    }
+  });
+};

@@ -3,7 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  :root { /* Tema Azul (Default) */
+  :root {
+    /* Tema Azul (Default) */
     --color-primary: 217 91% 60%; /* Azul-500: hsl(217, 91%, 60%) */
     --color-primary-focus: 217 91% 55%; /* Un poco más oscuro para focus/hover */
     --color-secondary: 221 83% 53%; /* Azul-700: hsl(221, 83%, 53%) */
@@ -12,7 +13,7 @@
     --color-text-secondary: 220 13% 40%; /* Gris-600: hsl(220, 13%, 40%) */
     --color-text-accent: 0 0% 100%; /* Blanco para textos sobre fondos primarios/accent */
     --color-bg-main: 220 60% 97%; /* Gris-50: hsl(220, 60%, 97%) */
-    --color-bg-card: 0 0% 100%;    /* Blanco */
+    --color-bg-card: 0 0% 100%; /* Blanco */
     --color-bg-accent: hsl(var(--color-primary)); /* Fondo con color primario */
     --color-border: 220 20% 87%; /* Gris-300: hsl(220, 20%, 87%) */
 
@@ -31,56 +32,56 @@
   }
 
   html {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
   }
-  
+
   body {
     @apply bg-bg-main text-text-main; /* Usar las nuevas clases semánticas */
   }
 
   /* Tema Blanco y Negro */
   .theme-bw {
-    --color-primary: 0 0% 0%;        /* Negro */
+    --color-primary: 0 0% 0%; /* Negro */
     --color-primary-focus: 0 0% 10%;
-    --color-secondary: 0 0% 20%;     /* Gris oscuro */
-    --color-accent: 0 0% 0%;         /* Negro */
-    --color-text-main: 0 0% 0%;      /* Negro */
+    --color-secondary: 0 0% 20%; /* Gris oscuro */
+    --color-accent: 0 0% 0%; /* Negro */
+    --color-text-main: 0 0% 0%; /* Negro */
     --color-text-secondary: 0 0% 20%; /* Gris oscuro */
-    --color-text-accent: 0 0% 100%;  /* Blanco */
-    --color-bg-main: 0 0% 100%;     /* Blanco */
-    --color-bg-card: 0 0% 95%;      /* Gris muy claro */
+    --color-text-accent: 0 0% 100%; /* Blanco */
+    --color-bg-main: 0 0% 100%; /* Blanco */
+    --color-bg-card: 0 0% 95%; /* Gris muy claro */
     --color-bg-accent: hsl(var(--color-primary));
-    --color-border: 0 0% 0%;         /* Negro */
+    --color-border: 0 0% 0%; /* Negro */
   }
 
   /* Tema Rojo */
   .theme-red {
-    --color-primary: 0 84% 60%;      /* Rojo-500: hsl(0, 84%, 60%) */
+    --color-primary: 0 84% 60%; /* Rojo-500: hsl(0, 84%, 60%) */
     --color-primary-focus: 0 84% 55%;
-    --color-secondary: 0 72% 43%;    /* Rojo-700: hsl(0, 72%, 43%) */
-    --color-accent: 0 74% 50%;       /* Rojo-600: hsl(0, 74%, 50%) */
-    --color-text-main: 220 24% 15%;   /* Gris-800 */
+    --color-secondary: 0 72% 43%; /* Rojo-700: hsl(0, 72%, 43%) */
+    --color-accent: 0 74% 50%; /* Rojo-600: hsl(0, 74%, 50%) */
+    --color-text-main: 220 24% 15%; /* Gris-800 */
     --color-text-secondary: 220 13% 40%; /* Gris-600 */
-    --color-text-accent: 0 0% 100%;   /* Blanco */
-    --color-bg-main: 0 100% 97%;     /* Rojo-50: hsl(0, 100%, 97%) */
-    --color-bg-card: 0 0% 100%;       /* Blanco */
+    --color-text-accent: 0 0% 100%; /* Blanco */
+    --color-bg-main: 0 100% 97%; /* Rojo-50: hsl(0, 100%, 97%) */
+    --color-bg-card: 0 0% 100%; /* Blanco */
     --color-bg-accent: hsl(var(--color-primary));
-    --color-border: 0 60% 85%;        /* Rojo-200 (aprox) */
+    --color-border: 0 60% 85%; /* Rojo-200 (aprox) */
   }
 
   /* Tema Amarillo Pastel */
   .theme-yellow-pastel {
-    --color-primary: 45 96% 65%;     /* Amarillo-300: hsl(45, 96%, 65%) */
+    --color-primary: 45 96% 65%; /* Amarillo-300: hsl(45, 96%, 65%) */
     --color-primary-focus: 45 96% 60%;
-    --color-secondary: 43 96% 57%;   /* Amarillo-400: hsl(43, 96%, 57%) */
-    --color-accent: 39 97% 51%;      /* Amarillo-500: hsl(39, 97%, 51%) */
-    --color-text-main: 220 17% 28%;   /* Gris-700: hsl(220, 17%, 28%) */
-    --color-text-secondary: 220 10% 45%;/* Gris-500: hsl(220, 10%, 45%) */
+    --color-secondary: 43 96% 57%; /* Amarillo-400: hsl(43, 96%, 57%) */
+    --color-accent: 39 97% 51%; /* Amarillo-500: hsl(39, 97%, 51%) */
+    --color-text-main: 220 17% 28%; /* Gris-700: hsl(220, 17%, 28%) */
+    --color-text-secondary: 220 10% 45%; /* Gris-500: hsl(220, 10%, 45%) */
     --color-text-accent: 220 17% 20%; /* Un gris oscuro para contraste sobre amarillo */
-    --color-bg-main: 48 100% 96%;    /* Amarillo-50: hsl(48, 100%, 96%) */
-    --color-bg-card: 0 0% 100%;       /* Blanco */
+    --color-bg-main: 48 100% 96%; /* Amarillo-50: hsl(48, 100%, 96%) */
+    --color-bg-card: 0 0% 100%; /* Blanco */
     --color-bg-accent: hsl(var(--color-primary));
-    --color-border: 45 80% 85%;       /* Amarillo-100/200 (aprox) */
+    --color-border: 45 80% 85%; /* Amarillo-100/200 (aprox) */
   }
 }
 
@@ -90,31 +91,31 @@
     /* Hover state podría ser bg-primary-focus o un color de acento más oscuro si se define */
     @apply hover:bg-primary-focus;
   }
-  
+
   .btn-secondary {
     /* Usaremos colores que contrasten bien con bg-main y usen text-secondary o text-main */
     @apply bg-bg-card hover:bg-border-color text-text-secondary font-medium py-2 px-4 rounded-lg transition-colors duration-200 border border-border-color focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-offset-2;
     /* Para temas oscuros, bg-bg-card podría ser oscuro, y text-text-secondary claro. Esto debería funcionar. */
   }
-  
+
   .btn-outline {
     @apply border border-primary text-primary hover:bg-primary hover:text-text-accent font-medium py-2 px-4 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
   }
-  
+
   .input-field {
     @apply w-full px-3 py-2 border border-border-color rounded-lg bg-bg-card text-text-main focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors duration-200;
     /* Placeholder color */
     /* @apply placeholder-text-secondary/70; */ /* Tailwind v3.1+ */
   }
-  
+
   .card {
     @apply bg-bg-card rounded-lg shadow-sm border border-border-color p-6 text-text-main;
   }
-  
+
   .table-cell {
     @apply px-4 py-3 text-sm border-b border-border-color text-text-secondary;
   }
-  
+
   .table-header {
     @apply px-4 py-3 text-left text-xs font-medium text-text-secondary uppercase tracking-wider border-b border-border-color bg-bg-card; /* bg-bg-card o bg-bg-main/90 */
   }
@@ -152,6 +153,24 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.2s ease-out forwards;
 }

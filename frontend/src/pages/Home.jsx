@@ -48,14 +48,9 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <button
-                onClick={handleCreateProject}
-                className="btn-primary flex items-center space-x-2" // btn-primary definido en index.css
-              >
-                <Plus className="w-5 h-5" />
-                <span>Nuevo Proyecto</span>
-              </button>
-              <Link to="/login" className="btn-outline text-lg px-8 py-3"> {/* btn-outline definido en index.css */}
+              <Link to="/login" className="btn-outline text-lg px-8 py-3">
+                {" "}
+                {/* btn-outline definido en index.css */}
                 Iniciar Sesión
               </Link>
             </div>
@@ -65,7 +60,9 @@ export default function Home() {
               {/* Los textos dentro de las tarjetas necesitan ser ajustados */}
               <div className="card text-center">
                 <Target className="w-12 h-12 text-primary-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2 text-text-main">Objetivos Claros</h3>
+                <h3 className="text-xl font-semibold mb-2 text-text-main">
+                  Objetivos Claros
+                </h3>
                 <p className="text-text-secondary">
                   Define objetivos generales y específicos para mantener el
                   enfoque del proyecto.
@@ -74,7 +71,9 @@ export default function Home() {
 
               <div className="card text-center">
                 <Calendar className="w-12 h-12 text-primary-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2 text-text-main">Planificación</h3>
+                <h3 className="text-xl font-semibold mb-2 text-text-main">
+                  Planificación
+                </h3>
                 <p className="text-text-secondary">
                   Organiza tareas con fechas, presupuestos y dependencias
                   jerárquicas.
@@ -83,7 +82,9 @@ export default function Home() {
 
               <div className="card text-center">
                 <Users className="w-12 h-12 text-primary-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold mb-2 text-text-main">Colaboración</h3>
+                <h3 className="text-xl font-semibold mb-2 text-text-main">
+                  Colaboración
+                </h3>
                 <p className="text-text-secondary">
                   Invita miembros y colabora en tiempo real con actualizaciones
                   instantáneas.
@@ -118,13 +119,17 @@ export default function Home() {
 
       {loading ? (
         <div className="flex justify-center py-12">
-          <div className="loading-spinner"></div> {/* Spinner ya actualizado en index.css */}
+          <div className="loading-spinner"></div>{" "}
+          {/* Spinner ya actualizado en index.css */}
         </div>
       ) : projects.length === 0 ? (
         <div className="text-center py-12">
           {/* Tarjeta para "No tienes proyectos" */}
-          <div className="card max-w-md mx-auto"> {/* card usa bg-bg-card */}
-            <Target className="w-16 h-16 text-text-secondary mx-auto mb-4" /> {/* Icono más tenue */}
+          <div className="card max-w-md mx-auto">
+            {" "}
+            {/* card usa bg-bg-card */}
+            <Target className="w-16 h-16 text-text-secondary mx-auto mb-4" />{" "}
+            {/* Icono más tenue */}
             <h3 className="text-xl font-semibold text-text-main mb-2">
               No tienes proyectos aún
             </h3>
@@ -149,10 +154,6 @@ export default function Home() {
                 <h3 className="text-lg font-semibold text-text-main group-hover:text-primary-600 transition-colors">
                   {project.titulo}
                 </h3>
-                {/* Fondo del span de Dueño podría ser bg-bg-main o un gris muy claro del tema */}
-                <span className="text-xs text-text-secondary bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                  Dueño: {project.owner?.nombre || 'N/A'}
-                </span>
               </div>
 
               {project.descripcion && (
@@ -205,6 +206,9 @@ export default function Home() {
                   <h3 className="text-lg font-semibold text-text-main group-hover:text-primary-600 transition-colors">
                     {project.titulo}
                   </h3>
+                  <span className="text-xs text-text-secondary bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                    Dueño: {project.owner?.nombre || "N/A"}
+                  </span>
                 </div>
                 {project.descripcion && (
                   <p className="text-text-secondary text-sm mb-4 line-clamp-2">
