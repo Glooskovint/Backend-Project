@@ -2,7 +2,21 @@ import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores/authStore";
 import { useProjectStore } from "../stores/projectStore";
-import { Plus, Calendar, Users, Target, LogInIcon } from "lucide-react";
+import {
+  Plus,
+  Calendar,
+  Users,
+  Target,
+  LogInIcon,
+  FoldHorizontal,
+  FolderCog,
+  FolderDot,
+  FolderX,
+  FolderArchive,
+  FolderTree,
+  LinkIcon,
+  FolderPlus,
+} from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -48,7 +62,10 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <Link to="/login" className="flex items-center space-x-2 btn-primary text-lg px-8 py-3">
+              <Link
+                to="/login"
+                className="flex items-center space-x-2 btn-primary text-lg px-8 py-3"
+              >
                 <LogInIcon className="w-4 h-4" />
                 <span>Iniciar Sesión</span>
               </Link>
@@ -101,7 +118,12 @@ export default function Home() {
       <div className="flex justify-between items-center mb-8">
         <div>
           {/* Título y subtítulo de la sección de usuario logueado */}
-          <h1 className="text-3xl font-bold text-text-main">Mis Proyectos</h1>
+          <div className="flex items-center space-x-3 mb-2">
+            <FolderTree className="w-7 h-7 text-text-primary" />
+            <h1 className="text-3xl font-semibold text-text-main">
+              Mis Proyectos
+            </h1>
+          </div>
           <p className="text-text-secondary mt-2">
             Gestiona y colabora en tus proyectos
           </p>
@@ -109,9 +131,9 @@ export default function Home() {
 
         <button
           onClick={handleCreateProject}
-          className="btn-primary flex items-center space-x-2" // btn-primary
+          className="btn-primary flex items-center space-x-2"
         >
-          <Plus className="w-5 h-5" />
+          <FolderPlus className="w-5 h-5" />
           <span>Nuevo Proyecto</span>
         </button>
       </div>
@@ -127,7 +149,7 @@ export default function Home() {
           <div className="card max-w-md mx-auto">
             {" "}
             {/* card usa bg-bg-card */}
-            <Target className="w-16 h-16 text-text-secondary mx-auto mb-4" />{" "}
+            <FolderX className="w-16 h-16 text-text-secondary mx-auto mb-4" />{" "}
             {/* Icono más tenue */}
             <h3 className="text-xl font-semibold text-text-main mb-2">
               No tienes proyectos aún
@@ -190,9 +212,12 @@ export default function Home() {
 
       {sharedProjects.length > 0 && (
         <div className="mt-12">
-          <h2 className="text-2xl font-bold text-text-main mb-4">
-            Proyectos Compartidos
-          </h2>
+          <div className="flex items-center space-x-3 mb-6">
+            <LinkIcon className="w-5 h-5 text-text-primary mb-4" />
+            <h2 className="text-2xl font-italic text-text-main mb-4">
+              Proyectos Compartidos
+            </h2>
+          </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {sharedProjects.map((project) => (
               // Tarjeta de proyecto compartido (similar a la anterior)

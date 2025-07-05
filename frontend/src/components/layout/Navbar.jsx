@@ -13,6 +13,7 @@ import {
   FolderClock,
   FolderClosed,
   Folders,
+  FolderPlus,
 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import JoinProjectModal from "../project/JoinProjectModal";
@@ -80,7 +81,7 @@ export default function Navbar() {
                     to="/create-project"
                     className="flex items-center space-x-1.5 px-3 py-2 rounded-md btn-primary hover:bg-opacity-90 transition-all"
                   >
-                    <Plus className="w-4 h-4" />
+                    <FolderPlus className="w-4 h-4" />
                     <span className="text-sm font-medium">Crear</span>
                   </Link>
 

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
 import { useProjectStore } from "../../stores/projectStore";
-import { Calendar, FileText, Target } from "lucide-react";
+import { Calendar, FileText, FolderCheck, Target, Type } from "lucide-react";
 import { format } from "date-fns";
 
 const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
@@ -73,7 +73,7 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
           Título del Proyecto *
         </label>
         <div className="relative">
-          <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-secondary" />
+          <Type className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-secondary" />
           {/* input-field ya definido en index.css, añadir dark: para fondo, texto, placeholder */}
           <input
             id="titulo"
@@ -97,16 +97,22 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
           Descripción (Opcional)
         </label>
         {/* textarea, similar a input-field */}
-        <textarea
-          id="descripcion"
-          name="descripcion"
-          rows={4}
-          value={formData.descripcion}
-          onChange={handleChange}
-          className="input-field resize-none dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-600"
-          placeholder="Describe brevemente el alcance y propósito del proyecto..."
-          disabled={loading}
-        />
+        <div className="relative w-full">
+          <FileText className="absolute left-3 top-3 h-5 w-5 text-gray-400 dark:text-gray-300" />
+          <label htmlFor="descripcion" className="sr-only">
+            Descripción del proyecto
+          </label>
+          <textarea
+            id="descripcion"
+            name="descripcion"
+            rows={3}
+            value={formData.descripcion}
+            onChange={handleChange}
+            className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
+            placeholder="Describe brevemente el proyecto..."
+            disabled={loading}
+          />
+        </div>
       </div>
 
       <div>
@@ -202,7 +208,7 @@ const CreateProjectForm = ({ onProjectCreated, onCancel }) => {
             <div className="loading-spinner w-4 h-4"></div> // Spinner ya actualizado
           ) : (
             <>
-              <Target className="w-4 h-4" />
+              <FolderCheck className="w-4 h-4" />
               <span>Crear Proyecto</span>
             </>
           )}

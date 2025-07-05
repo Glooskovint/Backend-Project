@@ -13,7 +13,13 @@ import {
   BarChart3,
   Download,
   FileText,
-  Loader2 // Importar el ícono de carga
+  Loader2, // Importar el ícono de carga
+  Workflow,
+  Coins,
+  GanttChartSquare,
+  SquareUserIcon,
+  FolderOpen,
+  Box,
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -206,7 +212,8 @@ export default function ProjectView() {
             ) : (
               <div className="flex items-center space-x-3">
                 {/* Título del proyecto */}
-                <h1 className="text-3xl font-bold text-text-main">
+                <FolderOpen className="w-7 h-7 text-text-primary" />
+                <h1 className="text-3xl text-text-main">
                   {currentProject.titulo}
                 </h1>
                 {isOwner && (
@@ -231,7 +238,7 @@ export default function ProjectView() {
                 </span>
               </div>
               <div className="flex items-center space-x-2">
-                <Users className="w-4 h-4" />
+                <SquareUserIcon className="w-4 h-4" />
                 <span>Dueño: {currentProject.owner?.nombre || 'N/A'}</span>
               </div>
             </div>
@@ -297,7 +304,7 @@ export default function ProjectView() {
               {/* Tarjeta Objetivo General - card usa bg-bg-card */}
               <div className="card">
                 <h3 className="text-lg font-semibold text-text-main mb-4 flex items-center space-x-2">
-                  <Target className="w-5 h-5 text-primary-600" />
+                  <Box className="w-5 h-5 text-primary-600" />
                   <span>Objetivo General</span>
                 </h3>
                 {isEditing ? (
@@ -361,17 +368,17 @@ export default function ProjectView() {
               <button className="p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary-500 transition-colors"
                 onClick={handleShowGantt}
               >
-                <BarChart3 className="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                <GanttChartSquare className="w-8 h-8 text-text-secondary mx-auto mb-2" />
                 <p className="text-sm text-text-secondary">Diagrama de Gantt</p>
               </button>
               <button className="p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary-500 transition-colors"
                 onClick={handleShowEDT}>
-                <Target className="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                <Workflow className="w-8 h-8 text-text-secondary mx-auto mb-2" />
                 <p className="text-sm text-text-secondary">Estructura de Desglose de Tareas</p>
               </button>
               <button className="p-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-primary-500 transition-colors"
               onClick={handleShowPresupuesto}>
-                <FileText className="w-8 h-8 text-text-secondary mx-auto mb-2" />
+                <Coins className="w-8 h-8 text-text-secondary mx-auto mb-2" />
                 <p className="text-sm text-text-secondary">Matriz de Presupuestos</p>
               </button>
             </div>

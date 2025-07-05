@@ -1,45 +1,51 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useAuthStore } from '../stores/authStore'
-import { LogIn, UserPlus, Mail, Lock, User } from 'lucide-react'
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuthStore } from "../stores/authStore";
+import { LogIn, UserPlus, Mail, Lock, User, Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
-  const [isLogin, setIsLogin] = useState(true)
+  const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    nombre: ''
-  })
-  const [loading, setLoading] = useState(false)
-  
-  const { login, register  } = useAuthStore()
-  const navigate = useNavigate()
+    email: "",
+    password: "",
+    confirmPassword: "", // <-- Nuevo campo
+    nombre: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false); // <-- Toggle visualización
+
+  const { login, register } = useAuthStore();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault();
+    setLoading(true);
 
     try {
       if (isLogin) {
-        await login(formData.email, formData.password)
+        await login(formData.email, formData.password);
       } else {
-        await register(formData.email, formData.password, formData.nombre)
+        if (formData.password !== formData.confirmPassword) {
+          alert("Las contraseñas no coinciden");
+          return;
+        }
+        await register(formData.email, formData.password, formData.nombre);
       }
 
-      navigate('/')
+      navigate("/");
     } catch (error) {
-      console.error('Error de autenticación:', error)
+      console.error("Error de autenticación:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+      [e.target.name]: e.target.value,
+    });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-blue-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -54,20 +60,21 @@ export default function Login() {
               )}
             </div>
             <h2 className="text-2xl font-bold text-gray-900">
-              {isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}
+              {isLogin ? "Iniciar Sesión" : "Crear Cuenta"}
             </h2>
             <p className="text-gray-600 mt-2">
-              {isLogin 
-                ? 'Accede a tu cuenta para gestionar tus proyectos' 
-                : 'Crea una cuenta para comenzar a colaborar'
-              }
+              {isLogin
+                ? "Accede a tu cuenta para gestionar tus proyectos"
+                : "Crea una cuenta para comenzar a colaborar"}
             </p>
           </div>
-
           <form onSubmit={handleSubmit} className="space-y-6">
             {!isLogin && (
               <div>
-                <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
+                <label
+                  htmlFor="nombre"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
                   Nombre completo
                 </label>
                 <div className="relative">
@@ -76,7 +83,7 @@ export default function Login() {
                     id="nombre"
                     name="nombre"
                     type="text"
-                    required={!isLogin}
+                    required
                     value={formData.nombre}
                     onChange={handleChange}
                     className="input-field pl-10"
@@ -86,8 +93,12 @@ export default function Login() {
               </div>
             )}
 
+            {/* Correo electrónico (siempre visible) */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Correo electrónico
               </label>
               <div className="relative">
@@ -105,8 +116,12 @@ export default function Login() {
               </div>
             </div>
 
+            {/* Contraseña (siempre visible) */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Contraseña
               </label>
               <div className="relative">
@@ -114,17 +129,66 @@ export default function Login() {
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="input-field pl-10"
+                  className="input-field pl-10 pr-10"
                   placeholder="••••••••"
                   minLength={6}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
               </div>
             </div>
 
+            {/* Confirmar contraseña (solo en modo registro) */}
+            {!isLogin && (
+              <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Confirmar contraseña
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="input-field pl-10 pr-10"
+                    placeholder="••••••••"
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Submit button */}
             <button
               type="submit"
               disabled={loading}
@@ -139,7 +203,7 @@ export default function Login() {
                   ) : (
                     <UserPlus className="h-5 w-5" />
                   )}
-                  <span>{isLogin ? 'Iniciar Sesión' : 'Crear Cuenta'}</span>
+                  <span>{isLogin ? "Iniciar Sesión" : "Crear Cuenta"}</span>
                 </>
               )}
             </button>
@@ -150,16 +214,15 @@ export default function Login() {
               onClick={() => setIsLogin(!isLogin)}
               className="text-primary-600 hover:text-primary-700 font-medium transition-colors"
             >
-              {isLogin 
-                ? '¿No tienes cuenta? Regístrate' 
-                : '¿Ya tienes cuenta? Inicia sesión'
-              }
+              {isLogin
+                ? "¿No tienes cuenta? Regístrate"
+                : "¿Ya tienes cuenta? Inicia sesión"}
             </button>
           </div>
 
           <div className="mt-6 pt-6 border-t border-gray-200 text-center">
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="text-gray-600 hover:text-gray-800 transition-colors"
             >
               ← Volver al inicio
@@ -168,5 +231,5 @@ export default function Login() {
         </div>
       </div>
     </div>
-  )
+  );
 }
