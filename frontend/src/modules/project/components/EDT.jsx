@@ -4,7 +4,8 @@ import { useProjectStore } from "../stores/projectStore";
 import Nodo from "./Nodo";
 
 export default function EDT({ projectId, onClose }) {
-  const { tasks, fetchTasks } = useProjectStore();
+  // Añadimos currentProject para obtener el título de forma más directa si está disponible
+  const { tasks, fetchTasks, currentProject } = useProjectStore();
 
   useEffect(() => {
     if (projectId) {
@@ -12,8 +13,13 @@ export default function EDT({ projectId, onClose }) {
     }
   }, [projectId, fetchTasks]);
 
-  const tareasRaiz = tasks.filter(t => t.parentId === null);
-  const proyectoTitulo = tasks[0]?.proyecto?.titulo || "Proyecto";
+  // Con la nueva estructura del backend, 'tasks' ya es la lista de tareas raíz.
+  // Si tasks pudiera ser null o undefined inicialmente, podríamos necesitar un fallback:
+  // const tareasRaiz = tasks || [];
+  // Pero dado que el store lo inicializa como [], 'tasks' debería ser seguro.
+  const tareasRaiz = tasks;
+  const proyectoTitulo = currentProject?.titulo || tasks[0]?.proyecto?.titulo || "Proyecto";
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 overflow-auto">

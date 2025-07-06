@@ -23,11 +23,9 @@ export default function TaskList({ tasks, onEdit, onDelete }) {
     setExpandedTasks(newExpanded);
   };
 
-  // La lógica para encontrar las tareas raíz se mueve aquí
-  const rootTasks = useMemo(() => {
-    const subtaskIds = new Set(tasks.flatMap(t => t.subtareas || []).map(s => s.id));
-    return tasks.filter(t => !subtaskIds.has(t.id));
-  }, [tasks]);
+  // Con la nueva estructura del backend, 'tasks' ya es la lista de tareas raíz.
+  // La memorización sigue siendo útil si 'tasks' puede cambiar frecuentemente.
+  const rootTasks = useMemo(() => tasks, [tasks]);
 
   return (
     <div className="card overflow-hidden">
@@ -35,7 +33,7 @@ export default function TaskList({ tasks, onEdit, onDelete }) {
         <div className="min-w-full">
           <TableHeader />
           <div>
-            {rootTasks.map((task, index) => (
+            {rootTasks.map((task, index) => ( // task aquí ya es una tarea raíz con sus subtareas anidadas
               <TaskRow
                 key={task.id}
                 task={task}
