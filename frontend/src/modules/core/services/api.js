@@ -8,6 +8,7 @@ class ApiService {
         'Content-Type': 'application/json',
         ...options.headers,
       },
+      credentials: 'include', // <-- IMPORTANTE para que el navegador envíe cookies
       ...options,
     }
 
@@ -24,7 +25,7 @@ class ApiService {
 
     return response.json()
   }
-
+  
   // Usuarios
   async createUser(userData) {
     return this.request('/usuarios', {

@@ -6,14 +6,9 @@ const app = express();
 
 // Configuración CORS más explícita
 const allowedOrigins = [
-  'http://localhost:3000', // Ejemplo: Frontend local React
-  'http://localhost:5173', // Ejemplo: Frontend local Vite
-  'http://localhost:8080', // Otro puerto común de desarrollo
-  // Patrones para Google Cloud Shell basados en tu ejemplo.
-  // Es importante que estos coincidan con los orígenes exactos que usa tu frontend.
-  /^https:\/\/\d{4}-cs-([a-f0-9-]+)\.cs-([a-z0-9-]+)-pkhd\.cloudshell\.dev$/,
-  // Si tienes un dominio personalizado para el frontend desplegado, añádelo aquí:
-  // 'https://tu-frontend-dominio.com'
+  'http://localhost:3000',
+  'http://localhost:5173',
+  'http://localhost:8080',
 ];
 
 const corsOptions = {
