@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useProjectStore } from '../stores/projectStore'
-import { useAuthStore } from '../../../auth/stores/authStore'
+import { useAuthStore } from '../../auth/stores/authStore'
 import { Users, Share2, Crown, User } from 'lucide-react'
 
 export default function MembersPanel({ projectId }) {

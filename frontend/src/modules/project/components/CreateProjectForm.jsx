@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../../auth/stores/authStore";
+import { useAuthStore } from "../../auth/stores/authStore";
 import { useProjectStore } from "../stores/projectStore";
 import { Calendar, FileText, FolderCheck, Target, Type } from "lucide-react";
 import { format } from "date-fns";

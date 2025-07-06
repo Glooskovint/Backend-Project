@@ -1,16 +1,16 @@
 import { Routes, Route } from 'react-router-dom'
 import { useEffect } from 'react'
-import { useAuthStore } from '../auth/stores/authStore'
+import { useAuthStore } from './modules/auth/stores/authStore'
 // Ya no necesitamos importar useThemeStore aquí para la carga inicial del tema,
 // pero aún podría ser necesario para el ThemeSwitcher o si otros componentes lo usan.
 // import { useThemeStore } from './stores/themeStore';
-import Navbar from './components/layout/Navbar'
-import ProtectedRoute from '../auth/components/ProtectedRoute'
-import Home from './pages/Home'
-import Login from '../auth/pages/Login'
-import CreateProject from '../project/pages/CreateProject'
-import ProjectView from '../project/pages/ProjectView'
-import JoinProject from '../project/pages/JoinProject'
+import Navbar from './modules/core/components/layout/Navbar'
+import ProtectedRoute from './modules/auth/components/ProtectedRoute'
+import Home from './modules/core/pages/Home'
+import Login from './modules/auth/pages/Login'
+import CreateProject from './modules/project/pages/CreateProject'
+import ProjectView from './modules/project/pages/ProjectView'
+import JoinProject from './modules/project/pages/JoinProject'
 
 function App() {
   const { initializeAuth } = useAuthStore();
