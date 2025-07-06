@@ -56,135 +56,99 @@ const ProjectExportPDF = ({ project, onExportFinish }) => {
     }
   };
 
-  const exportPDF = async () => {
-    const input = pdfContentRef.current;
-    if (!input) {
-      console.error("[ProjectExportPDF] PDF content container ('pdf-export-container') not found.");
-      if (onExportFinish) onExportFinish(false);
-      return;
-    }
-    console.log("[ProjectExportPDF] Starting PDF export process.");
+const exportPDF = async () => {
+  const input = pdfContentRef.current;
+  if (!input) {
+    console.error("[ProjectExportPDF] PDF content container not found.");
+    onExportFinish?.(false);
+    return;
+  }
 
-    const edtImage = await captureChartAsImage("edt-chart-render-area-pdf");
-    if (edtImage) {
-      const edtImgElement = document.getElementById("edt-chart-img-placeholder");
-      if (edtImgElement) {
-        edtImgElement.src = edtImage;
-        edtImgElement.style.display = "block";
-        const edtPlaceholderText = document.getElementById("edt-placeholder-text");
-        if (edtPlaceholderText) edtPlaceholderText.style.display = "none";
-        console.log("[ProjectExportPDF] EDT image updated.");
-      } else {
-        console.error("[ProjectExportPDF] EDT image placeholder element not found.");
+  console.log("[ProjectExportPDF] Starting PDF export process.");
+
+  // --- Chart capture logic (como antes) ---
+  const charts = [
+    { id: "edt-chart-render-area-pdf", imgId: "edt-chart-img-placeholder", placeholderId: "edt-placeholder-text" },
+    { id: "gantt-chart-render-area-pdf", imgId: "gantt-chart-img-placeholder", placeholderId: "gantt-placeholder-text" },
+    { id: "presupuesto-chart-render-area-pdf", imgId: "presupuesto-chart-img-placeholder", placeholderId: "presupuesto-placeholder-text" },
+  ];
+
+  for (const chart of charts) {
+    const image = await captureChartAsImage(chart.id);
+    if (image) {
+      const imgElement = document.getElementById(chart.imgId);
+      if (imgElement) {
+        imgElement.src = image;
+        imgElement.style.display = "block";
+        const placeholder = document.getElementById(chart.placeholderId);
+        if (placeholder) placeholder.style.display = "none";
+        console.log(`[ProjectExportPDF] ${chart.id} image updated.`);
       }
     } else {
-      console.warn("[ProjectExportPDF] Failed to capture EDT image. Placeholder will remain.");
+      console.warn(`[ProjectExportPDF] Failed to capture ${chart.id}.`);
     }
+  }
 
-    const ganttImage = await captureChartAsImage("gantt-chart-render-area-pdf");
-    if (ganttImage) {
-      const ganttImgElement = document.getElementById("gantt-chart-img-placeholder");
-      if (ganttImgElement) {
-        ganttImgElement.src = ganttImage;
-        ganttImgElement.style.display = "block";
-        const ganttPlaceholderText = document.getElementById("gantt-placeholder-text");
-        if (ganttPlaceholderText) ganttPlaceholderText.style.display = "none";
-        console.log("[ProjectExportPDF] Gantt image updated.");
-      } else {
-        console.error("[ProjectExportPDF] Gantt image placeholder element not found.");
-      }
-    } else {
-      console.warn("[ProjectExportPDF] Failed to capture Gantt image. Placeholder will remain.");
-    }
+  // --- Capture PDF content ---
+  console.log("[ProjectExportPDF] Capturing content for PDF...");
+  const canvas = await html2canvas(input, {
+    scale: 2,
+    useCORS: true,
+    logging: true,
+    windowWidth: input.scrollWidth,
+    windowHeight: input.scrollHeight,
+    ignoreElements: (element) => element.id === "charts-render-area",
+  });
 
-    const presupuestoImage = await captureChartAsImage("presupuesto-chart-render-area-pdf");
-    if (presupuestoImage) {
-      const presupuestoImgElement = document.getElementById("presupuesto-chart-img-placeholder");
-      if (presupuestoImgElement) {
-        presupuestoImgElement.src = presupuestoImage;
-        presupuestoImgElement.style.display = "block";
-        const presupuestoPlaceholderText = document.getElementById("presupuesto-placeholder-text");
-        if (presupuestoPlaceholderText) presupuestoPlaceholderText.style.display = "none";
-        console.log("[ProjectExportPDF] Presupuesto image updated.");
-      } else {
-        console.error("[ProjectExportPDF] Presupuesto image placeholder element not found.");
-      }
-    } else {
-      console.warn("[ProjectExportPDF] Failed to capture Presupuesto image. Placeholder will remain.");
-    }
+  const imgHeightPx = canvas.height;
+  const imgWidthPx = canvas.width;
+  const imgRatio = imgWidthPx / imgHeightPx;
 
-    console.log("[ProjectExportPDF] Capturing main PDF content area.");
-    html2canvas(input, {
-      scale: 1.5,
-      useCORS: true,
-      logging: true,
-      windowWidth: input.scrollWidth,
-      windowHeight: input.scrollHeight,
-      ignoreElements: (element) => {
-        // We are capturing the charts separately and placing them as images.
-        // The original chart components are in 'charts-render-area', which is outside 'pdf-content-proper' (the main PDF body).
-        // 'input' is 'pdf-export-container', which contains both 'charts-render-area' (hidden)
-        // and 'pdf-content-proper' (styled for PDF).
-        // The `html2canvas(input)` call captures 'pdf-export-container'.
-        // The charts within 'charts-render-area' should not be re-rendered by this top-level html2canvas call.
-        // However, since they are already off-screen and their images are placed in 'pdf-content-proper',
-        // ignoring them by ID might still be a good safety measure if their structure was different.
-        // For now, the main goal is that their *content* isn't duplicated.
-        // The 'charts-render-area' div itself is outside the visual flow of 'pdf-content-proper'.
-        return element.id === 'charts-render-area'; // Ignore the entire off-screen chart rendering div.
-      },
-    })
-      .then((canvas) => {
-        const imgData = canvas.toDataURL("image/png", 0.9);
-        const pdf = new jsPDF({
-          orientation: "portrait",
-          unit: "pt",
-          format: "a4",
-        });
+  const pdf = new jsPDF({
+    orientation: "portrait",
+    unit: "pt",
+    format: "a4",
+  });
 
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
-        const ratio = canvasWidth / canvasHeight;
-        let imgWidth = pdfWidth; // Fit to width
-        let imgHeight = imgWidth / ratio;
+  const pdfWidth = pdf.internal.pageSize.getWidth();
+  const pdfHeight = pdf.internal.pageSize.getHeight();
 
-        // Check if calculated height exceeds PDF page height, if so, scale by height instead
-        if (imgHeight > pdfHeight) {
-            imgHeight = pdfHeight; // Fit to height
-            imgWidth = imgHeight * ratio;
-        }
+  const pageHeightPx = (pdfHeight * imgWidthPx) / pdfWidth;
+  const totalPages = Math.ceil(imgHeightPx / pageHeightPx);
 
+  const ctx = canvas.getContext("2d");
 
-        let position = 0;
-        // Calculate total pages based on the scaled image height
-        const totalPages = Math.ceil(imgHeight / pdfHeight);
+  for (let i = 0; i < totalPages; i++) {
+    if (i > 0) pdf.addPage();
 
-        for (let i = 0; i < totalPages; i++) {
-          if (i > 0) {
-            pdf.addPage();
-          }
-          // Calculate the y position of the image slice for the current page
-          const sourceY = i * (pdfHeight * (canvasHeight / imgHeight)); // pdfHeight to source image coordinates
-          const sourceHeight = Math.min(pdfHeight * (canvasHeight / imgHeight), canvasHeight - sourceY); // Don't go past image bounds
+    const sliceCanvas = document.createElement("canvas");
+    sliceCanvas.width = imgWidthPx;
+    sliceCanvas.height = Math.min(pageHeightPx, imgHeightPx - i * pageHeightPx);
 
-          // Add image slice to PDF page
-          // Parameters: imageData, format, x, y, width, height, alias, compression, rotation
-          // We are adding the *entire* canvas image but relying on jsPDF to clip it per page.
-          // For multi-page from a single canvas, this means we adjust the y position of the *same* image.
-          pdf.addImage(imgData, "PNG", 0, -i * pdfHeight, imgWidth, imgHeight);
-        }
+    const sliceCtx = sliceCanvas.getContext("2d");
+    sliceCtx?.drawImage(
+      canvas,
+      0,
+      i * pageHeightPx,
+      imgWidthPx,
+      sliceCanvas.height,
+      0,
+      0,
+      imgWidthPx,
+      sliceCanvas.height
+    );
 
-        pdf.save(`proyecto-${project.titulo.replace(/\s+/g, "_")}.pdf`);
-        console.log("[ProjectExportPDF] PDF generated and saved.");
-        if (onExportFinish) onExportFinish(true);
-      })
-      .catch((error) => {
-        console.error("[ProjectExportPDF] Error during html2canvas processing or PDF generation:", error);
-        if (onExportFinish) onExportFinish(false);
-      });
-  };
+    const sliceImgData = sliceCanvas.toDataURL("image/png", 1.0);
+    const sliceHeightPt = (sliceCanvas.height * pdfWidth) / imgWidthPx;
+
+    pdf.addImage(sliceImgData, "PNG", 0, 0, pdfWidth, sliceHeightPt);
+  }
+
+  pdf.save(`proyecto-${project.titulo.replace(/\s+/g, "_")}.pdf`);
+  console.log("[ProjectExportPDF] PDF exported successfully.");
+  onExportFinish?.(true);
+};
+
 
   return (
     <div
