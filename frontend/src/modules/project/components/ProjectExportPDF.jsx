@@ -22,7 +22,7 @@ const ProjectExportPDF = ({ project, onExportFinish }) => {
       // Esto es especialmente importante si las gráficas tienen animaciones o carga asíncrona.
       const timer = setTimeout(() => {
         exportPDF();
-      }, 5000); // Increased timeout to 5000ms for more complex charts
+      }, 10000); // Increased timeout to 10000ms for more complex charts, especially Gantt
 
       return () => clearTimeout(timer);
     }
