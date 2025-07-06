@@ -11,27 +11,55 @@ import { es } from 'date-fns/locale';
 import { X } from 'lucide-react';
 import { useProjectStore } from '../stores/projectStore';
 
-const DAY_COLUMN_WIDTH = 48;
-const ROW_HEIGHT = 40;
+const DAY_COLUMN_WIDTH = 48; // Consider making this smaller for PDF if too wide
+const ROW_HEIGHT = 36; // Slightly smaller for PDF
+const TASK_LEGEND_WIDTH = 220; // Width for the task name column in PDF
 
-export default function Gantt({ projectId, onClose }) {
-  const { tasks, fetchTasks } = useProjectStore();
+export default function Gantt({ projectId, onClose, isExportMode = false, containerId = "gantt-chart-render-area-pdf" }) {
+  const { tasks, fetchTasks, currentProject } = useProjectStore(state => ({
+    tasks: state.tasks,
+    fetchTasks: state.fetchTasks,
+    currentProject: state.currentProject,
+  }));
   const [rootTasks, setRootTasks] = useState([]);
-  const [expandedTasks, setExpandedTasks] = useState({});
+  // For export mode, expand all tasks by default.
+  const [expandedTasks, setExpandedTasks] = useState(isExportMode ? {} : {});
+  const [initialExpansionDone, setInitialExpansionDone] = useState(false);
+
 
   useEffect(() => {
-    if (projectId) fetchTasks(projectId);
+    if (projectId) {
+      fetchTasks(projectId);
+    }
   }, [projectId, fetchTasks]);
 
   useEffect(() => {
     const allTaskIds = new Set(tasks.map(t => t.id));
+    // Ensure subtareas is always an array to prevent flatMap errors
     const subtaskIds = new Set(tasks.flatMap(t => t.subtareas || []).map(s => s.id));
     const root = tasks.filter(t => !subtaskIds.has(t.id));
     setRootTasks(root);
-  }, [tasks]);
 
-  const { dateRange, months } = useMemo(() => {
-    if (!rootTasks.length) return { dateRange: [], months: [] };
+    // If in export mode and initial expansion hasn't been done, expand all tasks
+    if (isExportMode && tasks.length > 0 && !initialExpansionDone) {
+      const allIdsToExpand = {};
+      const expandAll = (taskList) => {
+        taskList.forEach(task => {
+          if (task.subtareas && task.subtareas.length > 0) {
+            allIdsToExpand[task.id] = true;
+            expandAll(task.subtareas);
+          }
+        });
+      };
+      expandAll(root);
+      setExpandedTasks(allIdsToExpand);
+      setInitialExpansionDone(true);
+    }
+
+  }, [tasks, isExportMode, initialExpansionDone]);
+
+  const { dateRange, months, totalTimelineWidth } = useMemo(() => {
+    if (!tasks.length) return { dateRange: [], months: [], totalTimelineWidth: 0 }; // Use tasks directly
 
     let minDate = null;
     let maxDate = null;

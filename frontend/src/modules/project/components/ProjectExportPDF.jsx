@@ -22,154 +22,120 @@ const ProjectExportPDF = ({ project, onExportFinish }) => {
       // Esto es especialmente importante si las gráficas tienen animaciones o carga asíncrona.
       const timer = setTimeout(() => {
         exportPDF();
-      }, 2000); // Aumentar el tiempo si las gráficas son complejas
+      }, 5000); // Increased timeout to 5000ms for more complex charts
 
       return () => clearTimeout(timer);
     }
   }, [project]);
 
-  const captureChartAsImage = async (element, scale = 2) => {
-    if (!element) return null;
-    // Asegurarse de que el elemento es visible para html2canvas
-    const originalStyles = {
-      display: element.style.display,
-      position: element.style.position,
-      left: element.style.left,
-      top: element.style.top,
-      zIndex: element.style.zIndex,
-    };
-    element.style.display = "block"; // O 'inline-block', etc., según el layout
-    element.style.position = "absolute"; // Posicionar temporalmente para captura
-    element.style.left = "-9999px"; // Mover fuera de la pantalla
-    element.style.top = "-9999px";
-    element.style.zIndex = "10000"; // Asegurar que esté por encima de otros elementos
+  const captureChartAsImage = async (elementId, scale = 2) => {
+    const element = document.getElementById(elementId);
+    if (!element) {
+      console.error(`[ProjectExportPDF] Element with ID '${elementId}' not found for capture.`);
+      return null;
+    }
+    // Logging element visibility based on offsetWidth/Height can be misleading if parent is display:none
+    // but html2canvas might still work if the element itself has dimensions.
+    console.log(`[ProjectExportPDF] Attempting to capture element '${elementId}'.`);
 
     try {
       const canvas = await html2canvas(element, {
         scale: scale,
         useCORS: true,
-        logging: false, // Desactivar logging en producción
-        backgroundColor: null, // Para transparencia si es necesario, o color de fondo
-        // width: element.scrollWidth, // Usar scrollWidth/Height para capturar todo el contenido
-        // height: element.scrollHeight,
+        logging: true,
+        backgroundColor: '#ffffff',
         windowWidth: element.scrollWidth,
         windowHeight: element.scrollHeight,
       });
       const imgData = canvas.toDataURL("image/png");
-
-      // Restaurar estilos originales
-      element.style.display = originalStyles.display;
-      element.style.position = originalStyles.position;
-      element.style.left = originalStyles.left;
-      element.style.top = originalStyles.top;
-      element.style.zIndex = originalStyles.zIndex;
-
+      console.log(`[ProjectExportPDF] Successfully captured '${elementId}'. Image data length: ${imgData.length}`);
       return imgData;
     } catch (error) {
-      console.error("Error capturing chart as image:", error);
-      // Restaurar estilos originales en caso de error
-      element.style.display = originalStyles.display;
-      element.style.position = originalStyles.position;
-      element.style.left = originalStyles.left;
-      element.style.top = originalStyles.top;
-      element.style.zIndex = originalStyles.zIndex;
+      console.error(`[ProjectExportPDF] Error capturing chart '${elementId}' as image:`, error);
       return null;
     }
   };
 
   const exportPDF = async () => {
-    const input = pdfContentRef.current; // Usar la referencia
+    const input = pdfContentRef.current;
     if (!input) {
-      console.error("Element for PDF content not found.");
+      console.error("[ProjectExportPDF] PDF content container ('pdf-export-container') not found.");
       if (onExportFinish) onExportFinish(false);
       return;
     }
+    console.log("[ProjectExportPDF] Starting PDF export process.");
 
-    // 1. Capturar EDT como imagen
-    const edtImage = await captureChartAsImage(
-      document.getElementById("edt-chart-render-area-pdf")
-    );
+    const edtImage = await captureChartAsImage("edt-chart-render-area-pdf");
     if (edtImage) {
-      const edtImgElement = document.getElementById(
-        "edt-chart-img-placeholder"
-      );
+      const edtImgElement = document.getElementById("edt-chart-img-placeholder");
       if (edtImgElement) {
         edtImgElement.src = edtImage;
         edtImgElement.style.display = "block";
-        const edtPlaceholderText = document.getElementById(
-          "edt-placeholder-text"
-        );
+        const edtPlaceholderText = document.getElementById("edt-placeholder-text");
         if (edtPlaceholderText) edtPlaceholderText.style.display = "none";
+        console.log("[ProjectExportPDF] EDT image updated.");
+      } else {
+        console.error("[ProjectExportPDF] EDT image placeholder element not found.");
       }
+    } else {
+      console.warn("[ProjectExportPDF] Failed to capture EDT image. Placeholder will remain.");
     }
 
-    // 2. Capturar Gantt como imagen
-    const ganttImage = await captureChartAsImage(
-      document.getElementById("gantt-chart-render-area-pdf")
-    );
+    const ganttImage = await captureChartAsImage("gantt-chart-render-area-pdf");
     if (ganttImage) {
-      const ganttImgElement = document.getElementById(
-        "gantt-chart-img-placeholder"
-      );
+      const ganttImgElement = document.getElementById("gantt-chart-img-placeholder");
       if (ganttImgElement) {
         ganttImgElement.src = ganttImage;
         ganttImgElement.style.display = "block";
-        const ganttPlaceholderText = document.getElementById(
-          "gantt-placeholder-text"
-        );
+        const ganttPlaceholderText = document.getElementById("gantt-placeholder-text");
         if (ganttPlaceholderText) ganttPlaceholderText.style.display = "none";
+        console.log("[ProjectExportPDF] Gantt image updated.");
+      } else {
+        console.error("[ProjectExportPDF] Gantt image placeholder element not found.");
       }
+    } else {
+      console.warn("[ProjectExportPDF] Failed to capture Gantt image. Placeholder will remain.");
     }
 
-    // 3. Capturar Presupuesto como imagen
-    const presupuestoImage = await captureChartAsImage(
-      document.getElementById("presupuesto-chart-render-area-pdf")
-    );
+    const presupuestoImage = await captureChartAsImage("presupuesto-chart-render-area-pdf");
     if (presupuestoImage) {
-      const presupuestoImgElement = document.getElementById(
-        "presupuesto-chart-img-placeholder"
-      );
+      const presupuestoImgElement = document.getElementById("presupuesto-chart-img-placeholder");
       if (presupuestoImgElement) {
         presupuestoImgElement.src = presupuestoImage;
         presupuestoImgElement.style.display = "block";
-        const presupuestoPlaceholderText = document.getElementById(
-          "presupuesto-placeholder-text"
-        );
-        if (presupuestoPlaceholderText)
-          presupuestoPlaceholderText.style.display = "none";
+        const presupuestoPlaceholderText = document.getElementById("presupuesto-placeholder-text");
+        if (presupuestoPlaceholderText) presupuestoPlaceholderText.style.display = "none";
+        console.log("[ProjectExportPDF] Presupuesto image updated.");
+      } else {
+        console.error("[ProjectExportPDF] Presupuesto image placeholder element not found.");
       }
+    } else {
+      console.warn("[ProjectExportPDF] Failed to capture Presupuesto image. Placeholder will remain.");
     }
 
-    // Guardar referencia a los estilos originales para restaurarlos después de html2canvas
-    const originalDisplay = input.style.display;
-    const originalVisibility = input.style.visibility;
-
-    // Hacer el contenido visible temporalmente para html2canvas
-    input.style.display = "block";
-    input.style.visibility = "visible";
-    // Asegurar que esté posicionado de manera que html2canvas pueda "verlo" correctamente.
-    // A veces, posicionarlo absolutamente fuera de la pantalla funciona mejor.
-    input.style.position = "absolute";
-    input.style.left = "-9999px"; // Mover fuera de la pantalla para evitar parpadeo
-    input.style.top = "0px";
-
+    console.log("[ProjectExportPDF] Capturing main PDF content area.");
     html2canvas(input, {
-      scale: 1.5, // Escala ajustada para mejor rendimiento y tamaño de archivo
+      scale: 1.5,
       useCORS: true,
-      logging: false, // Desactivar en producción
-      windowWidth: input.scrollWidth, // Capturar todo el ancho
-      windowHeight: input.scrollHeight, // Capturar toda la altura
-      // Ignorar los contenedores de renderizado de gráficas originales
+      logging: true,
+      windowWidth: input.scrollWidth,
+      windowHeight: input.scrollHeight,
       ignoreElements: (element) => {
-        return (
-          element.id === "edt-chart-render-area-pdf" ||
-          element.id === "gantt-chart-render-area-pdf" ||
-          element.id === "presupuesto-chart-render-area-pdf"
-        );
+        // We are capturing the charts separately and placing them as images.
+        // The original chart components are in 'charts-render-area', which is outside 'pdf-content-proper' (the main PDF body).
+        // 'input' is 'pdf-export-container', which contains both 'charts-render-area' (hidden)
+        // and 'pdf-content-proper' (styled for PDF).
+        // The `html2canvas(input)` call captures 'pdf-export-container'.
+        // The charts within 'charts-render-area' should not be re-rendered by this top-level html2canvas call.
+        // However, since they are already off-screen and their images are placed in 'pdf-content-proper',
+        // ignoring them by ID might still be a good safety measure if their structure was different.
+        // For now, the main goal is that their *content* isn't duplicated.
+        // The 'charts-render-area' div itself is outside the visual flow of 'pdf-content-proper'.
+        return element.id === 'charts-render-area'; // Ignore the entire off-screen chart rendering div.
       },
     })
       .then((canvas) => {
-        const imgData = canvas.toDataURL("image/png", 0.9); // Calidad JPEG para reducir tamaño si es PNG grande
+        const imgData = canvas.toDataURL("image/png", 0.9);
         const pdf = new jsPDF({
           orientation: "portrait",
           unit: "pt",
@@ -181,82 +147,76 @@ const ProjectExportPDF = ({ project, onExportFinish }) => {
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
         const ratio = canvasWidth / canvasHeight;
-        const imgWidth = pdfWidth;
-        const imgHeight = imgWidth / ratio;
+        let imgWidth = pdfWidth; // Fit to width
+        let imgHeight = imgWidth / ratio;
+
+        // Check if calculated height exceeds PDF page height, if so, scale by height instead
+        if (imgHeight > pdfHeight) {
+            imgHeight = pdfHeight; // Fit to height
+            imgWidth = imgHeight * ratio;
+        }
+
 
         let position = 0;
-        let heightLeft = imgHeight;
+        // Calculate total pages based on the scaled image height
+        const totalPages = Math.ceil(imgHeight / pdfHeight);
 
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pdfHeight;
+        for (let i = 0; i < totalPages; i++) {
+          if (i > 0) {
+            pdf.addPage();
+          }
+          // Calculate the y position of the image slice for the current page
+          const sourceY = i * (pdfHeight * (canvasHeight / imgHeight)); // pdfHeight to source image coordinates
+          const sourceHeight = Math.min(pdfHeight * (canvasHeight / imgHeight), canvasHeight - sourceY); // Don't go past image bounds
 
-        while (heightLeft > 0) {
-          position = heightLeft - imgHeight; // Or position -= pdfHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-          heightLeft -= pdfHeight;
+          // Add image slice to PDF page
+          // Parameters: imageData, format, x, y, width, height, alias, compression, rotation
+          // We are adding the *entire* canvas image but relying on jsPDF to clip it per page.
+          // For multi-page from a single canvas, this means we adjust the y position of the *same* image.
+          pdf.addImage(imgData, "PNG", 0, -i * pdfHeight, imgWidth, imgHeight);
         }
 
         pdf.save(`proyecto-${project.titulo.replace(/\s+/g, "_")}.pdf`);
-
-        // Restaurar estilos originales del contenedor principal
-        input.style.display = originalDisplay;
-        input.style.visibility = originalVisibility;
-        input.style.position = "static"; // O el valor original
-        input.style.left = "auto";
-        input.style.top = "auto";
-
+        console.log("[ProjectExportPDF] PDF generated and saved.");
         if (onExportFinish) onExportFinish(true);
       })
       .catch((error) => {
-        console.error("Error generating PDF:", error);
-        // Restaurar estilos originales del contenedor principal en caso de error
-        input.style.display = originalDisplay;
-        input.style.visibility = originalVisibility;
-        input.style.position = "static";
-        input.style.left = "auto";
-        input.style.top = "auto";
-
+        console.error("[ProjectExportPDF] Error during html2canvas processing or PDF generation:", error);
         if (onExportFinish) onExportFinish(false);
       });
   };
 
-  // El useEffect ya llama a exportPDF.
-  // Este componente está diseñado para ser "invisible" y auto-ejecutable.
-
   return (
-    // Contenedor principal para el contenido del PDF. Permanece fuera de la pantalla.
     <div
       id="pdf-export-container"
       ref={pdfContentRef}
       style={{
         position: "absolute",
-        left: "-9999px", // Técnica robusta para ocultar sin afectar el renderizado.
-        top: "0px",
-        width: "8.5in", // Ancho estándar de página (Letter).
+        left: "-9999px",
+        top: "0px",      // Keep at top for consistency if temporarily made visible for debug
+        width: "8.5in",  // Standard Letter width, content inside will be structured by 'pdf-content-proper'
         backgroundColor: "#fff",
-        fontFamily: "'Times New Roman', Times, serif", // Fuente formal por defecto.
-        color: "#000", // Texto en negro puro.
-        zIndex: -10, // Aseguramos que esté por detrás de todo.
+        fontFamily: "'Times New Roman', Times, serif",
+        color: "#000",
+        zIndex: -10,
       }}
     >
-      {/* Área de renderizado para gráficas. No interfiere con el layout. */}
+      {/* This area is for rendering chart components in isExportMode=true so they can be captured by ID.
+           It's positioned off-screen. The captured images are then placed into 'pdf-content-proper'. */}
       <div
         id="charts-render-area"
         style={{
           position: "absolute",
-          left: "-9999px",
-          top: "-9999px",
-          zIndex: -11,
+          left: "0px", // Relative to parent pdf-export-container, helps if debugging visibility
+          top: "-9999px", // Effectively off-screen
+          zIndex: -11, // Behind everything
         }}
       >
         <div ref={edtContainerRef}>
           {project?.id && <EDT projectId={project.id} isExportMode={true} />}
         </div>
-        <div
-          ref={ganttContainerRef}
-          style={{ width: "1000px", height: "600px" }}
-        >
+        {/* Gantt and Presupuesto containers no longer need fixed dimensions here; components manage their own size for export */}
+        <div ref={ganttContainerRef}>
           {project?.id && <Gantt projectId={project.id} isExportMode={true} />}
         </div>
         <div ref={presupuestoContainerRef}>
@@ -266,7 +226,8 @@ const ProjectExportPDF = ({ project, onExportFinish }) => {
         </div>
       </div>
 
-      {/* Contenido real del PDF. Aquí se definen los márgenes de la "página". */}
+      {/* This is the actual content that will be rendered into the PDF pages.
+           It includes text, and placeholders for chart images. */}
       <div
         id="pdf-content-proper"
         style={{ padding: "1in" /* Márgenes estándar de 1 pulgada */ }}
@@ -357,6 +318,43 @@ const ProjectExportPDF = ({ project, onExportFinish }) => {
           </p>
         </div>
 
+        {/* Conditional rendering for Specific Objectives */}
+        <div style={{ marginBottom: "30px" }}>
+          <h3
+            style={{
+              fontSize: "14pt",
+              fontWeight: "bold",
+              borderBottom: "1px solid #000",
+              paddingBottom: "5px",
+              marginBottom: "15px",
+            }}
+          >
+            3. Objetivos Específicos y Criterios de Éxito
+          </h3>
+          {project.objectives && project.objectives.length > 0 ? (
+            <ul
+              style={{
+                fontSize: "12pt",
+                lineHeight: "1.6",
+                paddingLeft: "30px",
+                margin: "0",
+              }}
+            >
+              {project.objectives.map((obj, index) => (
+                <li key={index} style={{ marginBottom: "10px" }}>
+                  {obj.descripcion} {/* Assuming 'descripcion' is the correct field */}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p style={{ fontSize: "12pt", lineHeight: "1.6", fontStyle: "italic" }}>
+              No hay objetivos específicos definidos para este proyecto.
+            </p>
+          )}
+        </div>
+
+        {/* Contenedor para EDT con Salto de Página */}
+        {/* Remove the old block for objectives, it's replaced above
         {project.objectives && project.objectives.length > 0 && (
           <div style={{ marginBottom: "30px" }}>
             <h3

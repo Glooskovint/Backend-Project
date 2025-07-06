@@ -55,16 +55,19 @@ export const useProjectStore = create((set, get) => ({
     set({ loading: true })
     try {
       const project = await api.getProject(id)
-      set({ currentProject: project, loading: false })
+      // Fetch specific objectives for the project
+      const objectives = await api.getObjectivesByProject(id)
+
+      set({ currentProject: { ...project, objectives: objectives || [] }, loading: false })
 
       // Conectar a la sala del proyecto para actualizaciones en tiempo real
       socketService.joinProject(id)
 
-      return project
+      return { ...project, objectives: objectives || [] }
     } catch (error) {
       console.error('Error al obtener proyecto:', error)
       set({ loading: false })
-      toast.error('Error al cargar proyecto')
+      toast.error('Error al cargar proyecto y sus objetivos')
     }
   },
 
