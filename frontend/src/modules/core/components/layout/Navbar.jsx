@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../stores/authStore";
+import { useAuthStore } from "../../../auth/stores/authStore";
 import {
   Home,
   Plus,
@@ -16,7 +16,7 @@ import {
   FolderPlus,
 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
-import JoinProjectModal from "../project/JoinProjectModal";
+import JoinProjectModal from "../../../project/components/JoinProjectModal";
 import ThemeSwitcher from "./ThemeSwitcher";
 
 export default function Navbar() {

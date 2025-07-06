@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useProjectStore } from '../stores/projectStore'
-import { useAuthStore } from '../stores/authStore'
+import { useAuthStore } from '../../auth/stores/authStore'
 import { Users, CheckCircle, XCircle } from 'lucide-react'
 
 export default function JoinProject() {

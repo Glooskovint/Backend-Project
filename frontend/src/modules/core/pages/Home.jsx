@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuthStore } from "../stores/authStore";
-import { useProjectStore } from "../stores/projectStore";
+import { useAuthStore } from "../../auth/stores/authStore";
+import { useProjectStore } from "../../project/stores/projectStore";
 import {
   Plus,
   Calendar,

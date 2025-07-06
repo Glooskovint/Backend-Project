@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useProjectStore } from '../../stores/projectStore'
+import { useProjectStore } from '../stores/projectStore'
 import { Target, Plus, Edit3, Trash2 } from 'lucide-react'
 
 export default function ObjectivesPanel({ projectId }) {

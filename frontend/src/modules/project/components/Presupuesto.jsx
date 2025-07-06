@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
-import { useProjectStore } from '../../stores/projectStore';
+import { useProjectStore } from '../stores/projectStore';
 
 export default function MatrizPresupuesto({ projectId, onClose }) {
   const { tasks, fetchTasks } = useProjectStore();

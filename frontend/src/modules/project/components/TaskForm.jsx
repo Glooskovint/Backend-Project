@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useProjectStore } from '../../stores/projectStore'
+import { useProjectStore } from '../stores/projectStore'
 import { X, Calendar, DollarSign, FileText } from 'lucide-react'
 import { format } from 'date-fns'
 

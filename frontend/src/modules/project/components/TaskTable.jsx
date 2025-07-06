@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useProjectStore } from '../../stores/projectStore';
+import { useProjectStore } from '../stores/projectStore';
 import { Plus, Calendar } from 'lucide-react';
 
 import TaskForm from './TaskForm';

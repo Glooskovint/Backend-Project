@@ -9,7 +9,7 @@ import {
 } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { X } from 'lucide-react';
-import { useProjectStore } from '../../stores/projectStore';
+import { useProjectStore } from '../stores/projectStore';
 
 const DAY_COLUMN_WIDTH = 48;
 const ROW_HEIGHT = 40;

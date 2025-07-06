@@ -5,8 +5,8 @@ import {
   signOut,
   onAuthStateChanged
 } from 'firebase/auth'
-import { auth } from '../config/firebase'
-import { api } from '../services/api'
+import { auth } from '../../core/config/firebase'
+import { api } from '../../core/services/api'
 import toast from 'react-hot-toast'
 
 export const useAuthStore = create((set, get) => ({

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useProjectStore } from '../../stores/projectStore';
-import { useAuthStore } from '../../stores/authStore';
+import { useProjectStore } from '../stores/projectStore';
+import { useAuthStore } from '../../../auth/stores/authStore';
 import toast from 'react-hot-toast';
 import { X, Link } from 'lucide-react';
 

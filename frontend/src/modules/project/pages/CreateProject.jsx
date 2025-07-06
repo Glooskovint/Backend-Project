@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
-import CreateProjectForm from '../components/project/CreateProjectForm'; // Importar el nuevo componente
+import CreateProjectForm from '../components/CreateProjectForm'; // Importar el nuevo componente
 
 export default function CreateProject() {
   const navigate = useNavigate();

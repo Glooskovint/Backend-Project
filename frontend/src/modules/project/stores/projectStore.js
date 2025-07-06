@@ -1,6 +1,6 @@
 import { create } from 'zustand'
-import { api } from '../services/api'
-import { socketService } from '../services/socket'
+import { api } from '../../core/services/api'
+import { socketService } from '../../core/services/socket'
 import toast from 'react-hot-toast'
 
 export const useProjectStore = create((set, get) => ({

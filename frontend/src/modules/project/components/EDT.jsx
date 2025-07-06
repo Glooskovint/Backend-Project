@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { X } from "lucide-react";
-import { useProjectStore } from "../../stores/projectStore";
+import { useProjectStore } from "../stores/projectStore";
 import Nodo from "./Nodo";
 
 export default function EDT({ projectId, onClose }) {

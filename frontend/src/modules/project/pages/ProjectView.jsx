@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useProjectStore } from '../stores/projectStore'
-import { useAuthStore } from '../stores/authStore'
+import { useAuthStore } from '../../auth/stores/authStore'
 import { 
   ArrowLeft, 
   Calendar, 
@@ -23,13 +23,13 @@ import {
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
-import TaskTable from '../components/project/TaskTable'
-import MembersPanel from '../components/project/MembersPanel'
-import ObjectivesPanel from '../components/project/ObjectivesPanel'
-import Gantt from '../components/project/Gantt'
-import EDT from '../components/project/EDT'
-import Presupuesto from '../components/project/Presupuesto'
-import ProjectExportPDF from '../components/project/ProjectExportPDF' // Importar el componente de exportación
+import TaskTable from '../components/TaskTable'
+import MembersPanel from '../components/MembersPanel'
+import ObjectivesPanel from '../components/ObjectivesPanel'
+import Gantt from '../components/Gantt'
+import EDT from '../components/EDT'
+import Presupuesto from '../components/Presupuesto'
+import ProjectExportPDF from '../components/ProjectExportPDF' // Importar el componente de exportación
 
 export default function ProjectView() {
   const { id } = useParams()
