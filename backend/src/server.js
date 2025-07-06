@@ -11,7 +11,7 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigins = ['http://localhost:5173', 'https://5173-cs-dc784e0c-3b1b-4810-a41f-70556e491eee.cs-us-east1-pkhd.cloudshell.dev'];
+    const allowedOrigins = ['http://localhost:5173'];
     console.log('Origin recibida:', origin);
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
