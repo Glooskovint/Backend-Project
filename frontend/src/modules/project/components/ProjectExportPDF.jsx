@@ -31,124 +31,158 @@ const ProjectExportPDF = ({ project, onExportFinish }) => {
   const captureChartAsImage = async (elementId, scale = 2) => {
     const element = document.getElementById(elementId);
     if (!element) {
-      console.error(`[ProjectExportPDF] Element with ID '${elementId}' not found for capture.`);
+      console.error(
+        `[ProjectExportPDF] Element with ID '${elementId}' not found for capture.`
+      );
       return null;
     }
     // Logging element visibility based on offsetWidth/Height can be misleading if parent is display:none
     // but html2canvas might still work if the element itself has dimensions.
-    console.log(`[ProjectExportPDF] Attempting to capture element '${elementId}'.`);
+    console.log(
+      `[ProjectExportPDF] Attempting to capture element '${elementId}'.`
+    );
 
     try {
       const canvas = await html2canvas(element, {
         scale: scale,
         useCORS: true,
         logging: true,
-        backgroundColor: '#ffffff',
+        backgroundColor: "#ffffff",
         windowWidth: element.scrollWidth,
         windowHeight: element.scrollHeight,
       });
       const imgData = canvas.toDataURL("image/png");
-      console.log(`[ProjectExportPDF] Successfully captured '${elementId}'. Image data length: ${imgData.length}`);
+      console.log(
+        `[ProjectExportPDF] Successfully captured '${elementId}'. Image data length: ${imgData.length}`
+      );
       return imgData;
     } catch (error) {
-      console.error(`[ProjectExportPDF] Error capturing chart '${elementId}' as image:`, error);
+      console.error(
+        `[ProjectExportPDF] Error capturing chart '${elementId}' as image:`,
+        error
+      );
       return null;
     }
   };
 
-const exportPDF = async () => {
-  const input = pdfContentRef.current;
-  if (!input) {
-    console.error("[ProjectExportPDF] PDF content container not found.");
-    onExportFinish?.(false);
-    return;
-  }
-
-  console.log("[ProjectExportPDF] Starting PDF export process.");
-
-  // --- Chart capture logic (como antes) ---
-  const charts = [
-    { id: "edt-chart-render-area-pdf", imgId: "edt-chart-img-placeholder", placeholderId: "edt-placeholder-text" },
-    { id: "gantt-chart-render-area-pdf", imgId: "gantt-chart-img-placeholder", placeholderId: "gantt-placeholder-text" },
-    { id: "presupuesto-chart-render-area-pdf", imgId: "presupuesto-chart-img-placeholder", placeholderId: "presupuesto-placeholder-text" },
-  ];
-
-  for (const chart of charts) {
-    const image = await captureChartAsImage(chart.id);
-    if (image) {
-      const imgElement = document.getElementById(chart.imgId);
-      if (imgElement) {
-        imgElement.src = image;
-        imgElement.style.display = "block";
-        const placeholder = document.getElementById(chart.placeholderId);
-        if (placeholder) placeholder.style.display = "none";
-        console.log(`[ProjectExportPDF] ${chart.id} image updated.`);
-      }
-    } else {
-      console.warn(`[ProjectExportPDF] Failed to capture ${chart.id}.`);
+  const exportPDF = async () => {
+    const input = pdfContentRef.current;
+    if (!input) {
+      console.error("[ProjectExportPDF] PDF content container not found.");
+      onExportFinish?.(false);
+      return;
     }
-  }
 
-  // --- Capture PDF content ---
-  console.log("[ProjectExportPDF] Capturing content for PDF...");
-  const canvas = await html2canvas(input, {
-    scale: 2,
-    useCORS: true,
-    logging: true,
-    windowWidth: input.scrollWidth,
-    windowHeight: input.scrollHeight,
-    ignoreElements: (element) => element.id === "charts-render-area",
-  });
+    console.log("[ProjectExportPDF] Starting PDF export process.");
 
-  const imgHeightPx = canvas.height;
-  const imgWidthPx = canvas.width;
-  const imgRatio = imgWidthPx / imgHeightPx;
+    const charts = [
+      {
+        id: "edt-chart-render-area-pdf",
+        imgId: "edt-chart-img-placeholder",
+        placeholderId: "edt-placeholder-text",
+      },
+      {
+        id: "gantt-chart-render-area-pdf",
+        imgId: "gantt-chart-img-placeholder",
+        placeholderId: "gantt-placeholder-text",
+      },
+      {
+        id: "presupuesto-chart-render-area-pdf",
+        imgId: "presupuesto-chart-img-placeholder",
+        placeholderId: "presupuesto-placeholder-text",
+      },
+    ];
 
-  const pdf = new jsPDF({
-    orientation: "portrait",
-    unit: "pt",
-    format: "a4",
-  });
+    for (const chart of charts) {
+      const image = await captureChartAsImage(chart.id);
+      if (image) {
+        const imgElement = document.getElementById(chart.imgId);
+        if (imgElement) {
+          imgElement.src = image;
+          imgElement.style.display = "block";
+          const placeholder = document.getElementById(chart.placeholderId);
+          if (placeholder) placeholder.style.display = "none";
+          console.log(`[ProjectExportPDF] ${chart.id} image updated.`);
+        }
+      } else {
+        console.warn(`[ProjectExportPDF] Failed to capture ${chart.id}.`);
+      }
+    }
 
-  const pdfWidth = pdf.internal.pageSize.getWidth();
-  const pdfHeight = pdf.internal.pageSize.getHeight();
+    // Captura principal del documento para PDF
+    const canvas = await html2canvas(input, {
+      scale: 2,
+      useCORS: true,
+      logging: true,
+      windowWidth: input.scrollWidth,
+      windowHeight: input.scrollHeight,
+      ignoreElements: (element) => element.id === "charts-render-area",
+    });
 
-  const pageHeightPx = (pdfHeight * imgWidthPx) / pdfWidth;
-  const totalPages = Math.ceil(imgHeightPx / pageHeightPx);
+    const imgHeightPx = canvas.height;
+    const imgWidthPx = canvas.width;
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "pt",
+      format: "a4",
+    });
 
-  const ctx = canvas.getContext("2d");
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const pageHeightPx = (pdfHeight * imgWidthPx) / pdfWidth;
+    const totalPages = Math.ceil(imgHeightPx / pageHeightPx);
 
-  for (let i = 0; i < totalPages; i++) {
-    if (i > 0) pdf.addPage();
+    const ctx = canvas.getContext("2d");
 
-    const sliceCanvas = document.createElement("canvas");
-    sliceCanvas.width = imgWidthPx;
-    sliceCanvas.height = Math.min(pageHeightPx, imgHeightPx - i * pageHeightPx);
+    for (let i = 0; i < totalPages; i++) {
+      if (i > 0) pdf.addPage();
 
-    const sliceCtx = sliceCanvas.getContext("2d");
-    sliceCtx?.drawImage(
-      canvas,
-      0,
-      i * pageHeightPx,
-      imgWidthPx,
-      sliceCanvas.height,
-      0,
-      0,
-      imgWidthPx,
-      sliceCanvas.height
-    );
+      const sliceCanvas = document.createElement("canvas");
+      sliceCanvas.width = imgWidthPx;
+      sliceCanvas.height = Math.min(
+        pageHeightPx,
+        imgHeightPx - i * pageHeightPx
+      );
 
-    const sliceImgData = sliceCanvas.toDataURL("image/png", 1.0);
-    const sliceHeightPt = (sliceCanvas.height * pdfWidth) / imgWidthPx;
+      const sliceCtx = sliceCanvas.getContext("2d");
+      sliceCtx?.drawImage(
+        canvas,
+        0,
+        i * pageHeightPx,
+        imgWidthPx,
+        sliceCanvas.height,
+        0,
+        0,
+        imgWidthPx,
+        sliceCanvas.height
+      );
 
-    pdf.addImage(sliceImgData, "PNG", 0, 0, pdfWidth, sliceHeightPt);
-  }
+      // VALIDACIÓN: evitar agregar páginas completamente blancas
+      const imageData = sliceCtx?.getImageData(
+        0,
+        0,
+        sliceCanvas.width,
+        sliceCanvas.height
+      );
+      const pixels = imageData?.data;
+      const hasVisibleContent = pixels?.some((value, index) => {
+        const channel = index % 4;
+        return channel !== 3 && value < 250; // R, G, B canales con algo que no sea blanco puro
+      });
 
-  pdf.save(`proyecto-${project.titulo.replace(/\s+/g, "_")}.pdf`);
-  console.log("[ProjectExportPDF] PDF exported successfully.");
-  onExportFinish?.(true);
-};
+      if (hasVisibleContent) {
+        const sliceImgData = sliceCanvas.toDataURL("image/png", 1.0);
+        const sliceHeightPt = (sliceCanvas.height * pdfWidth) / imgWidthPx;
+        pdf.addImage(sliceImgData, "PNG", 0, 0, pdfWidth, sliceHeightPt);
+      } else {
+        console.log(`[ProjectExportPDF] Página ${i + 1} omitida (vacía)`);
+      }
+    }
 
+    pdf.save(`proyecto-${project.titulo.replace(/\s+/g, "_")}.pdf`);
+    console.log("[ProjectExportPDF] PDF exportado con éxito.");
+    onExportFinish?.(true);
+  };
 
   return (
     <div
@@ -157,8 +191,8 @@ const exportPDF = async () => {
       style={{
         position: "absolute",
         left: "-9999px",
-        top: "0px",      // Keep at top for consistency if temporarily made visible for debug
-        width: "8.5in",  // Standard Letter width, content inside will be structured by 'pdf-content-proper'
+        top: "0px", // Keep at top for consistency if temporarily made visible for debug
+        width: "8.5in", // Standard Letter width, content inside will be structured by 'pdf-content-proper'
         backgroundColor: "#fff",
         fontFamily: "'Times New Roman', Times, serif",
         color: "#000",
@@ -181,7 +215,13 @@ const exportPDF = async () => {
         </div>
         {/* Gantt and Presupuesto containers no longer need fixed dimensions here; components manage their own size for export */}
         <div ref={ganttContainerRef}>
-          {project?.id && <Gantt projectId={project.id} isExportMode={true} exportMaxDepth={1} />}
+          {project?.id && (
+            <Gantt
+              projectId={project.id}
+              isExportMode={true}
+              exportMaxDepth={1}
+            />
+          )}
         </div>
         <div ref={presupuestoContainerRef}>
           {project?.id && (
@@ -306,12 +346,19 @@ const exportPDF = async () => {
             >
               {project.objectives.map((obj, index) => (
                 <li key={index} style={{ marginBottom: "10px" }}>
-                  {obj.descripcion} {/* Assuming 'descripcion' is the correct field */}
+                  {obj.descripcion}{" "}
+                  {/* Assuming 'descripcion' is the correct field */}
                 </li>
               ))}
             </ul>
           ) : (
-            <p style={{ fontSize: "12pt", lineHeight: "1.6", fontStyle: "italic" }}>
+            <p
+              style={{
+                fontSize: "12pt",
+                lineHeight: "1.6",
+                fontStyle: "italic",
+              }}
+            >
               No hay objetivos específicos definidos para este proyecto.
             </p>
           )}
