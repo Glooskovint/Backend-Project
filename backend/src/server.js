@@ -13,15 +13,12 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Permitir solicitudes sin origen (como Postman o curl directo, o mobile apps)
-    if (!origin) return callback(null, true);
-
-    // Verificar si el origen está en la lista blanca o coincide con un patrón Regex
-    if (allowedOrigins.some(allowedOrigin =>
-        typeof allowedOrigin === 'string' ? allowedOrigin === origin : allowedOrigin.test(origin)
-      )) {
+    const allowedOrigins = ['http://localhost:5173'];
+    console.log('Origin recibida:', origin);
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
+      console.warn(`Bloqueado por CORS: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
