@@ -15,15 +15,14 @@ const DAY_COLUMN_WIDTH = 48; // Consider making this smaller for PDF if too wide
 const ROW_HEIGHT = 36; // Slightly smaller for PDF
 const TASK_LEGEND_WIDTH = 220; // Width for the task name column in PDF
 
-export default function Gantt({ projectId, onClose, isExportMode = false, containerId = "gantt-chart-render-area-pdf" }) {
+export default function Gantt({ projectId, onClose, isExportMode = false, containerId = "gantt-chart-render-area-pdf", exportMaxDepth = null }) {
   const { tasks, fetchTasks, currentProject } = useProjectStore(state => ({
     tasks: state.tasks,
     fetchTasks: state.fetchTasks,
     currentProject: state.currentProject,
   }));
   const [rootTasks, setRootTasks] = useState([]);
-  // For export mode, expand all tasks by default.
-  const [expandedTasks, setExpandedTasks] = useState(isExportMode ? {} : {});
+  const [expandedTasks, setExpandedTasks] = useState({});
   const [initialExpansionDone, setInitialExpansionDone] = useState(false);
 
 
@@ -35,31 +34,37 @@ export default function Gantt({ projectId, onClose, isExportMode = false, contai
 
   useEffect(() => {
     const allTaskIds = new Set(tasks.map(t => t.id));
-    // Ensure subtareas is always an array to prevent flatMap errors
     const subtaskIds = new Set(tasks.flatMap(t => t.subtareas || []).map(s => s.id));
     const root = tasks.filter(t => !subtaskIds.has(t.id));
     setRootTasks(root);
 
-    // If in export mode and initial expansion hasn't been done, expand all tasks
     if (isExportMode && tasks.length > 0 && !initialExpansionDone) {
       const allIdsToExpand = {};
-      const expandAll = (taskList) => {
+      const expandTasksRecursively = (taskList, currentDepth) => {
+        if (exportMaxDepth !== null && currentDepth >= exportMaxDepth) {
+          return;
+        }
         taskList.forEach(task => {
           if (task.subtareas && task.subtareas.length > 0) {
             allIdsToExpand[task.id] = true;
-            expandAll(task.subtareas);
+            expandTasksRecursively(task.subtareas, currentDepth + 1);
           }
         });
       };
-      expandAll(root);
+      expandTasksRecursively(root, 0); // Start recursion with depth 0 for root tasks
       setExpandedTasks(allIdsToExpand);
       setInitialExpansionDone(true);
+    } else if (!isExportMode) {
+      // Reset expanded tasks if not in export mode (or rely on user interaction)
+      // For simplicity, we can just initialize to {} if not isExportMode for manual expansion by user
+      setExpandedTasks({});
+      setInitialExpansionDone(false); // Reset for potential re-toggles of exportMode if component persists
     }
 
-  }, [tasks, isExportMode, initialExpansionDone]);
+  }, [tasks, isExportMode, initialExpansionDone, exportMaxDepth]); // Added exportMaxDepth to dependencies
 
   const { dateRange, months, totalTimelineWidth } = useMemo(() => {
-    if (!tasks.length) return { dateRange: [], months: [], totalTimelineWidth: 0 }; // Use tasks directly
+    if (!tasks.length) return { dateRange: [], months: [], totalTimelineWidth: 0 };
 
     let minDate = null;
     let maxDate = null;

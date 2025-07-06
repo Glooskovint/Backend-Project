@@ -217,7 +217,7 @@ const ProjectExportPDF = ({ project, onExportFinish }) => {
         </div>
         {/* Gantt and Presupuesto containers no longer need fixed dimensions here; components manage their own size for export */}
         <div ref={ganttContainerRef}>
-          {project?.id && <Gantt projectId={project.id} isExportMode={true} />}
+          {project?.id && <Gantt projectId={project.id} isExportMode={true} exportMaxDepth={1} />}
         </div>
         <div ref={presupuestoContainerRef}>
           {project?.id && (

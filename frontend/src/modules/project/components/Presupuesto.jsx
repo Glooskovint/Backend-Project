@@ -112,7 +112,6 @@ export default function Presupuesto({ projectId, onClose, isExportMode = false, 
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full mx-4 my-10 p-6 animate-slide-up overflow-auto">
         {presupuestoTableContent}
-        </div>
       </div>
     </div>
   );
