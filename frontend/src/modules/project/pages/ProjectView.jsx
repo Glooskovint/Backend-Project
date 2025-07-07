@@ -5,7 +5,6 @@ import { useAuthStore } from "../../auth/stores/authStore";
 import {
   ArrowLeft,
   Calendar,
-  Target,
   Users,
   Share2,
   Edit3,

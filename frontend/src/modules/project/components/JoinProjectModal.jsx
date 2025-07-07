@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useProjectStore } from '../stores/projectStore';
 import { useAuthStore } from '../../auth/stores/authStore';
 import toast from 'react-hot-toast';

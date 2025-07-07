@@ -3,13 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../auth/stores/authStore";
 import { useProjectStore } from "../../project/stores/projectStore";
 import {
-  Plus,
   Calendar,
   Users,
   Target,
   LogInIcon,
   FolderX,
-  FolderTree,
   LinkIcon,
   FolderPlus,
   Folders,

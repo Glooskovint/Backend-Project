@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CreateProjectForm from './CreateProjectForm';
 import { X } from 'lucide-react';

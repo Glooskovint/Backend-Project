@@ -1,18 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../../auth/stores/authStore";
 import {
-  Home,
   Plus,
-  LogIn,
   LogOut,
   User,
   Menu,
   X,
   UserPlus,
-  Briefcase,
-  FolderClock,
-  FolderClosed,
-  Folders,
   FolderPlus,
   FolderCog,
 } from "lucide-react";
