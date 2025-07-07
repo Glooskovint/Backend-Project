@@ -48,6 +48,19 @@ exports.create = async (data) => {
             ownerId,
         },
     });
+
+    // Automatically add the owner as a member of the project
+    if (proyectoCreado && ownerId) {
+        await prisma.miembroProyecto.create({
+            data: {
+                proyectoId: proyectoCreado.id,
+                usuarioId: ownerId,
+                rol: 'owner', // Or 'admin', depending on your role structure
+            },
+        });
+    }
+
+    return proyectoCreado;
 };
 
 exports.update = async (id, data) => {
