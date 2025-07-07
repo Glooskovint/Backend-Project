@@ -12,5 +12,6 @@ router.post('/', validateBody(createProjectSchema), projectController.create);
 router.patch('/:id', projectController.update);
 router.get('/:id/invite', projectController.getInviteLink);
 router.post('/join/:token', projectController.joinByInvite);
+router.delete('/:id', projectController.remove);
 
 module.exports = router;

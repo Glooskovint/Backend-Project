@@ -13,7 +13,11 @@ const create = (data) => prisma.proyecto.create({ data });
 const update = (id, data) =>
     prisma.proyecto.update({ where: { id }, data });
 
-const remove = (id) => prisma.proyecto.delete({ where: { id } });
+const remove = async (id) => {
+  // La lógica de eliminación en cascada se maneja en el servicio.
+  // Este método simplemente llama a la eliminación del proyecto.
+  return await prisma.proyecto.delete({ where: { id } });
+};
 
 module.exports = {
     getAll,
@@ -21,5 +25,5 @@ module.exports = {
     getByUser,
     create,
     update,
-    remove
+    remove,
 };

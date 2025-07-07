@@ -77,6 +77,12 @@ class ApiService {
     })
   }
 
+  async deleteProject(id) {
+    return this.request(`/proyectos/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
   async getProjectMembers(projectId) {
     return this.request(`/proyectos/${projectId}/miembros`)
   }

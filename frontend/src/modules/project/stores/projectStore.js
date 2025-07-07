@@ -88,6 +88,22 @@ export const useProjectStore = create((set, get) => ({
     }
   },
 
+  deleteProject: async (id) => {
+    try {
+      await api.deleteProject(id);
+      set(state => ({
+        projects: state.projects.filter(p => p.id !== id),
+        sharedProjects: state.sharedProjects.filter(p => p.id !== id),
+        currentProject: state.currentProject?.id === id ? null : state.currentProject,
+      }));
+      toast.success('Proyecto eliminado correctamente');
+    } catch (error) {
+      console.error('Error al eliminar proyecto:', error);
+      toast.error('Error al eliminar proyecto');
+      throw error;
+    }
+  },
+
   // Tareas
   fetchTasks: async (projectId) => {
     try {

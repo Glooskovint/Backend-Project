@@ -20,6 +20,7 @@ import {
   SquareUserIcon,
   FolderOpen,
   Box,
+  Trash2, // Icono de papelera
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -41,7 +42,8 @@ export default function ProjectView() {
     fetchProject, 
     clearCurrentProject,
     getInviteLink,
-    updateProject
+    updateProject,
+    deleteProject, // Añadir deleteProject
   } = useProjectStore()
   
   const [activeTab, setActiveTab] = useState('overview')
@@ -52,6 +54,7 @@ export default function ProjectView() {
   const [showPresupuesto, setShowPresupuesto] = useState(false)
   const [isExporting, setIsExporting] = useState(false) // Estado para controlar la exportación
   const [showExportComponent, setShowExportComponent] = useState(false) // Estado para montar el componente de PDF
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false) // Estado para el diálogo de confirmación
 
   useEffect(() => {
     if (id) {
@@ -98,6 +101,19 @@ export default function ProjectView() {
       // Optionally, show an error message to the user
     }
   }
+
+  const handleDeleteProject = async () => {
+    if (!currentProject) return;
+    try {
+      await deleteProject(currentProject.id);
+      navigate('/'); // Redirigir a la lista de proyectos o a la página de inicio
+      // Opcionalmente, mostrar un mensaje de éxito
+    } catch (error) {
+      console.error('Error al eliminar el proyecto:', error);
+      // Opcionalmente, mostrar un mensaje de error
+    }
+    setShowDeleteConfirm(false); // Cerrar el diálogo de confirmación
+  };
 
   const handleShowGantt = () => {
     setShowGantt(true)
@@ -207,6 +223,15 @@ export default function ProjectView() {
                   >
                     Cancelar
                   </button>
+                  {isOwner && (
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="btn-danger text-sm flex items-center space-x-1" // btn-danger
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span>Eliminar</span>
+                    </button>
+                  )}
                 </div>
               </div>
             ) : (
@@ -386,6 +411,32 @@ export default function ProjectView() {
         )}
       </div>
     </div>
+
+    {/* Diálogo de confirmación para eliminar proyecto */}
+    {showDeleteConfirm && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-bg-card p-6 rounded-lg shadow-xl max-w-sm w-full">
+          <h3 className="text-lg font-semibold text-text-main mb-4">Confirmar Eliminación</h3>
+          <p className="text-text-secondary mb-6">
+            ¿Estás seguro de que quieres eliminar este proyecto? Esta acción no se puede deshacer.
+          </p>
+          <div className="flex justify-end space-x-3">
+            <button
+              onClick={() => setShowDeleteConfirm(false)}
+              className="btn-secondary" // btn-secondary
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleDeleteProject}
+              className="btn-danger" // btn-danger
+            >
+              Eliminar Proyecto
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
   </>
   )
 }

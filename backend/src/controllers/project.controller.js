@@ -96,4 +96,14 @@ exports.getSharedProjects = async (req, res, next) => {
   } catch (error) {
     next(error)
   }
-}
+};
+
+exports.remove = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await projectService.remove(parseInt(id));
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};

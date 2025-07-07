@@ -155,3 +155,22 @@ exports.getSharedProjects = async (userId) => {
     }
   });
 };
+
+exports.remove = async (id) => {
+  // Primero, eliminar todas las tareas y objetivos asociados al proyecto.
+  // Esto es importante para mantener la integridad referencial si hay claves foráneas.
+  await prisma.tarea.deleteMany({
+    where: { proyectoId: id },
+  });
+  await prisma.objetivo.deleteMany({
+    where: { proyectoId: id },
+  });
+  // Luego, eliminar los miembros del proyecto.
+  await prisma.miembroProyecto.deleteMany({
+    where: { proyectoId: id },
+  });
+  // Finalmente, eliminar el proyecto.
+  return await prisma.proyecto.delete({
+    where: { id },
+  });
+};
