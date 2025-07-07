@@ -4,33 +4,37 @@ const cors = require('cors');
 const { Server } = require('socket.io');
 const app = express();
 
-// Configuración CORS más explícita
+// Configuración CORS para producción
 const allowedOrigins = [
-  'http://localhost:5173',
+  'http://localhost', // Para Nginx en local sirviendo en puerto 80
+  'http://localhost:80', // Alternativa para Nginx
+  'https://localhost', // Para Nginx en local sirviendo en puerto 443 (si se configura HTTPS)
+  'https://localhost:443', // Alternativa para Nginx
+  // Añade aquí tu dominio de producción, por ejemplo:
+  // 'https://tuapp.com',
 ];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigins = ['http://localhost:5173'];
-    console.log('Origin recibida:', origin);
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Permitir solicitudes sin 'origin' (por ejemplo, Postman, curl, o si Nginx reescribe la cabecera)
+    // O si el origen está en la lista de permitidos.
+    // En un entorno de producción estricto, podrías querer eliminar `!origin`
+    // si todas las solicitudes deben provenir de un navegador y a través de Nginx que establece el origen.
+    if (!origin || allowedOrigins.some(allowedOrigin => origin.startsWith(allowedOrigin))) {
       callback(null, true);
     } else {
-      console.warn(`Bloqueado por CORS: ${origin}`);
+      console.warn(`Bloqueado por CORS: Origen ${origin} no permitido.`);
       callback(new Error('Not allowed by CORS'));
     }
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  credentials: true, // Importante si envías cookies o encabezados de autorización
-  optionsSuccessStatus: 200 // Algunos navegadores antiguos (IE11) tienen problemas con 204
+  credentials: true,
+  optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
-
-// Habilitar el manejo de solicitudes preflight para todas las rutas
-// Esto es a menudo útil si hay proxies o configuraciones complejas.
-app.options('*', cors(corsOptions));
+app.options('*', cors(corsOptions)); // Habilitar preflight requests
 
 app.use(express.json());
 

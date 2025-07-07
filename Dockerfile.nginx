@@ -1,0 +1,19 @@
+# Usar una imagen base de Nginx
+FROM nginx:stable-alpine
+
+# Eliminar la configuración por defecto de Nginx
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copiar nuestra configuración personalizada de Nginx
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copiar los certificados SSL/TLS si se van a usar (opcional, descomentar si es necesario)
+# Asegúrate de que la ruta coincida con la que Nginx espera en nginx.conf
+# COPY ./nginx/ssl/ /etc/nginx/ssl/
+
+# Exponer puertos (aunque esto es más informativo, ya que docker-compose lo maneja)
+EXPOSE 80
+EXPOSE 443
+
+# Comando por defecto para iniciar Nginx
+CMD ["nginx", "-g", "daemon off;"]

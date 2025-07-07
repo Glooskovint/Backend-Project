@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   db:
     image: postgres:15
@@ -6,46 +8,76 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-    ports:
-      - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
-      - backend
+      - backend_internal
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   backend:
-    build: ./backend
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    ports:
-      - "5000:5000"
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: always
     environment:
       DATABASE_URL: ${DATABASE_URL}
+      NODE_ENV: production
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     command: >
       sh -c "
+        until npx prisma db probe; do
+          >&2 echo 'Prisma DB probe failed. Waiting for DB...'
+          sleep 3
+        done &&
         npx prisma generate &&
         npx prisma migrate deploy &&
         node src/server.js
       "
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:5000/health || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:5000/ || exit 1"]
       interval: 30s
+      timeout: 10s
       retries: 3
-      start_period: 10s
+      start_period: 20s
     networks:
-      - backend
+      - backend_internal
+      - public_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile # Este Dockerfile ahora usa Nginx para servir
+    restart: always
+    networks:
+      - public_network
+
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx # Necesitaremos crear este archivo
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend: # Depende del servicio frontend (que es un Nginx)
+        condition: service_started # o service_healthy si el frontend Nginx tuviera un healthcheck
+    networks:
+      - public_network
 
 volumes:
   postgres-data:
 
 networks:
-  backend:
+  backend_internal:
+    driver: bridge
+  public_network: # Red renombrada para claridad, usada por Nginx y los servicios expuestos
     driver: bridge
