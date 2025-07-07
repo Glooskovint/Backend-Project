@@ -24,7 +24,7 @@ export default function Nodo({ task, nivel = 0 }) {
             {expandido ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
           </button>
         )}
-        <div className={`text-white px-4 py-2 rounded shadow-md text-center font-semibold text-sm ${color}`}>
+        <div className={`w-40 text-white px-2 py-2 rounded shadow-md text-center font-semibold text-sm truncate ${color}`}>
           {task.nombre}
           <div className="text-xs font-normal">
             {new Date(task.fecha_inicio).toLocaleDateString()} - {new Date(task.fecha_fin).toLocaleDateString()}
