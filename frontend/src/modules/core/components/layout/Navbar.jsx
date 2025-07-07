@@ -14,6 +14,7 @@ import {
   FolderClosed,
   Folders,
   FolderPlus,
+  FolderCog,
 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import JoinProjectModal from "../../../project/components/JoinProjectModal";
@@ -60,7 +61,7 @@ export default function Navbar() {
               to="/"
               className="flex items-center space-x-2 text-xl font-semibold text-primary-600 hover:text-primary-500 transition-colors"
             >
-              <Folders className="w-6 h-6" />
+              <FolderCog className="w-6 h-6" />
               <span>Planificador de Proyectos</span>
             </Link>
 

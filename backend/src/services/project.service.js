@@ -47,8 +47,6 @@ exports.create = async (data) => {
             fecha_fin: new Date(fecha_fin),
             ownerId,
         },
-            ownerId,
-        },
     });
 
     // Automatically add the owner as a member of the project

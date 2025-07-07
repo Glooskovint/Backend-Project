@@ -8,14 +8,11 @@ import {
   Users,
   Target,
   LogInIcon,
-  FoldHorizontal,
-  FolderCog,
-  FolderDot,
   FolderX,
-  FolderArchive,
   FolderTree,
   LinkIcon,
   FolderPlus,
+  Folders,
 } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -119,8 +116,8 @@ export default function Home() {
         <div>
           {/* Título y subtítulo de la sección de usuario logueado */}
           <div className="flex items-center space-x-3 mb-2">
-            <FolderTree className="w-7 h-7 text-text-primary" />
-            <h1 className="text-3xl font-semibold text-text-main">
+            <Folders className="text-3xl font-semibold text-text-main" />
+            <h1 className="text-3xl text-text-main">
               Mis Proyectos
             </h1>
           </div>
