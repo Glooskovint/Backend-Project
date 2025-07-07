@@ -135,9 +135,10 @@ exports.create = async (data) => {
     fecha_inicio,
     fecha_fin,
     presupuesto,
+    assignedMembers, // Extract assignedMembers
   } = data;
 
-  return await prisma.tarea.create({
+  const createdTask = await prisma.tarea.create({
     data: {
       proyectoId: parseInt(proyectoId),
       parentId: parentId ? parseInt(parentId) : null,
@@ -149,6 +150,28 @@ exports.create = async (data) => {
     },
     include: {
       subtareas: true,
+       asignaciones: true, // Include asignaciones to return them
+    },
+  });
+
+  // Handle assignedMembers
+  if (assignedMembers && assignedMembers.length > 0) {
+    await prisma.asignacionTarea.createMany({
+      data: assignedMembers.map(userId => ({
+        tareaId: createdTask.id,
+        usuarioId: userId,
+        fecha_asignacion: new Date(),
+      })),
+      skipDuplicates: true, // Avoid errors if an assignment already exists (though for creation it's less likely)
+    });
+  }
+
+  // Re-fetch the task with its assignments to return the complete object
+  return await prisma.tarea.findUnique({
+    where: { id: createdTask.id },
+    include: {
+      subtareas: true,
+      asignaciones: { include: { usuario: true } }, // Include user details in assignments
     },
   });
 };
@@ -161,9 +184,12 @@ exports.update = async (id, data) => {
     presupuesto, 
     parentId,
     metadata,
+    assignedMembers, // Extract assignedMembers
   } = data;
 
-  return await prisma.tarea.update({
+  // Start a transaction to handle task update and assignments
+  return await prisma.$transaction(async (tx) => {
+    const updatedTask = await tx.tarea.update({
     where: { id },
     data: {
       nombre,
@@ -175,7 +201,50 @@ exports.update = async (id, data) => {
     },
     include: {
       subtareas: true,
+      // We will include asignaciones in the final fetch after handling them
     },
+  });
+
+    // Handle assignedMembers for update:
+    // 1. Get current assignments for this task.
+    // 2. Determine which assignments to add and which to remove.
+    if (assignedMembers !== undefined) { // Only update if assignedMembers is part of the request
+      const currentAssignments = await tx.asignacionTarea.findMany({
+        where: { tareaId: id },
+      });
+      const currentMemberIds = currentAssignments.map(a => a.usuarioId);
+
+      const membersToAdd = assignedMembers.filter(userId => !currentMemberIds.includes(userId));
+      const assignmentsToRemove = currentAssignments.filter(a => !assignedMembers.includes(a.usuarioId));
+
+      if (membersToAdd.length > 0) {
+        await tx.asignacionTarea.createMany({
+          data: membersToAdd.map(userId => ({
+            tareaId: id,
+            usuarioId: userId,
+            fecha_asignacion: new Date(),
+          })),
+        });
+      }
+
+      if (assignmentsToRemove.length > 0) {
+        await tx.asignacionTarea.deleteMany({
+          where: {
+            tareaId: id,
+            usuarioId: { in: assignmentsToRemove.map(a => a.usuarioId) },
+          },
+        });
+      }
+    }
+
+    // Re-fetch the task with its updated assignments to return the complete object
+    return await tx.tarea.findUnique({
+      where: { id: updatedTask.id },
+      include: {
+        subtareas: true,
+        asignaciones: { include: { usuario: true } }, // Include user details in assignments
+      },
+    });
   });
 };
 

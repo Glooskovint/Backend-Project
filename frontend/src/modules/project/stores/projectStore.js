@@ -117,7 +117,12 @@ export const useProjectStore = create((set, get) => ({
 
   createTask: async (taskData) => {
     try {
-      const newTask = await api.createTask(taskData)
+      // Asegúrate de que assignedMembers se envía incluso si está vacío
+      const dataToSend = {
+        ...taskData,
+        assignedMembers: taskData.assignedMembers || []
+      };
+      const newTask = await api.createTask(dataToSend)
       set(state => ({
         tasks: [...state.tasks, newTask]
       }))
@@ -130,9 +135,14 @@ export const useProjectStore = create((set, get) => ({
     }
   },
 
-  updateTask: async (id, data) => {
+  updateTask: async (id, taskData) => {
     try {
-      const updatedTask = await api.updateTask(id, data)
+      // Asegúrate de que assignedMembers se envía incluso si está vacío
+      const dataToSend = {
+        ...taskData,
+        assignedMembers: taskData.assignedMembers || []
+      };
+      const updatedTask = await api.updateTask(id, dataToSend)
       set(state => ({
         tasks: state.tasks.map(task =>
           task.id === id ? updatedTask : task

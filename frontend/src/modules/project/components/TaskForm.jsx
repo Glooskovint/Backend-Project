@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useProjectStore } from '../stores/projectStore'
-import { X, Calendar, DollarSign, FileText } from 'lucide-react'
+import { X, Calendar, DollarSign, FileText, Users } from 'lucide-react'
 import { format } from 'date-fns'
+import Select from 'react-select'
 
 export default function TaskForm({ projectId, task, onClose }) {
-  const { createTask, updateTask, tasks } = useProjectStore()
+  const { createTask, updateTask, tasks, members, fetchMembers } = useProjectStore()
   const [formData, setFormData] = useState({
     nombre: '',
     fecha_inicio: format(new Date(), 'yyyy-MM-dd'),
@@ -21,10 +22,12 @@ export default function TaskForm({ projectId, task, onClose }) {
         fecha_inicio: format(new Date(task.fecha_inicio), 'yyyy-MM-dd'),
         fecha_fin: format(new Date(task.fecha_fin), 'yyyy-MM-dd'),
         presupuesto: parseFloat(task.presupuesto),
-        parentId: task.parentId
+    parentId: task.parentId,
+    assignedMembers: task.asignaciones ? task.asignaciones.map(a => a.usuarioId) : []
       })
     }
-  }, [task])
+    fetchMembers(projectId)
+  }, [task, projectId, fetchMembers])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -56,6 +59,13 @@ export default function TaskForm({ projectId, task, onClose }) {
       ...prev,
       [name]: name === 'presupuesto' ? parseFloat(value) || 0 : 
                name === 'parentId' ? (value ? parseInt(value) : null) : value
+    }))
+  }
+
+  const handleMemberChange = (selectedOptions) => {
+    setFormData(prev => ({
+      ...prev,
+      assignedMembers: selectedOptions ? selectedOptions.map(option => option.value) : []
     }))
   }
 
@@ -101,6 +111,26 @@ export default function TaskForm({ projectId, task, onClose }) {
                 onChange={handleChange}
                 className="input-field pl-10 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-600"
                 placeholder="Ej: Diseño de interfaz"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="assignedMembers" className="block text-sm font-medium text-text-main mb-2">
+              Asignar Miembros
+            </label>
+            <div className="relative">
+              <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-text-secondary" />
+              <Select
+                isMulti
+                id="assignedMembers"
+                name="assignedMembers"
+                options={members.map(member => ({ value: member.usuarioId, label: member.usuario.nombre }))}
+                value={members.filter(member => formData.assignedMembers?.includes(member.usuarioId)).map(member => ({ value: member.usuarioId, label: member.usuario.nombre }))}
+                onChange={handleMemberChange}
+                className="input-field pl-10 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+                classNamePrefix="react-select"
+                placeholder="Seleccionar miembros"
               />
             </div>
           </div>

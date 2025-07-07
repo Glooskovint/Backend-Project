@@ -1,4 +1,7 @@
 const taskService = require('../services/task.service');
+const { createTaskSchema, updateTaskSchema } = require('../validators/task.schema');
+const validateBody = require('../middlewares/validateBody');
+
 
 exports.getAll = async (req, res) => {
   try {
