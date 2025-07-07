@@ -8,6 +8,6 @@ router.get('/', taskController.getAll);
 router.post('/', validateBody(createTaskSchema), taskController.create);
 router.patch('/:id', validateBody(updateTaskSchema), taskController.update); // Changed PUT to PATCH and added validation
 router.delete('/:id', taskController.remove);
-router.get('/project/:id', taskController.getByProject); // Corrected route parameter name
+router.get('/proyecto/:id', taskController.getByProject); // Corrected route parameter name
 
 module.exports = router;

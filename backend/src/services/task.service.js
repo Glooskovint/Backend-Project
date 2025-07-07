@@ -169,9 +169,9 @@ async function updateParentAggregates(taskId, tx) {
     dataToUpdate.fecha_fin = latestEndDate;
   }
   if (task.presupuesto !== cumulativeBudget) { // Check if it's a number before parseFloat
-      if (parseFloat(task.presupuesto) !== cumulativeBudget) {
-        dataToUpdate.presupuesto = cumulativeBudget;
-      }
+    if (parseFloat(task.presupuesto) !== cumulativeBudget) {
+      dataToUpdate.presupuesto = cumulativeBudget;
+    }
   }
 
 
@@ -212,7 +212,7 @@ exports.create = async (data) => {
     },
     include: {
       subtareas: true,
-       asignaciones: true, // Include asignaciones to return them
+      asignaciones: true, // Include asignaciones to return them
     },
   });
 
@@ -245,13 +245,13 @@ exports.create = async (data) => {
   }
   return taskToReturn;
 };
- 
+
 exports.update = async (id, data) => {
   const {
     nombre,
     fecha_inicio,
     fecha_fin,
-    presupuesto, 
+    presupuesto,
     parentId,
     metadata,
     assignedMembers, // Extract assignedMembers
@@ -285,14 +285,9 @@ exports.update = async (id, data) => {
     Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
 
     const updatedTask = await tx.tarea.update({
-    where: { id },
-    data: updateData,
-    },
-    include: {
-      subtareas: true,
-      // We will include asignaciones in the final fetch after handling them
-    },
-  });
+      where: { id },
+      data: updateData,
+    });
 
     // Handle assignedMembers for update:
     // 1. Get current assignments for this task.
@@ -336,7 +331,7 @@ exports.update = async (id, data) => {
       // However, if its parentId changed (e.g. became a root task),
       // the old parent also needs updating.
       if (taskToUpdate.parentId && taskToUpdate.parentId !== updatedTask.parentId) {
-         await updateParentAggregates(taskToUpdate.parentId, tx); // Update old parent
+        await updateParentAggregates(taskToUpdate.parentId, tx); // Update old parent
       }
     }
 
