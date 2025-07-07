@@ -38,7 +38,7 @@ exports.create = async (data) => {
         ownerId = null,
     } = data;
 
-    return await prisma.proyecto.create({
+    const newProject = await prisma.proyecto.create({
         data: {
             titulo,
             descripcion,
@@ -47,20 +47,22 @@ exports.create = async (data) => {
             fecha_fin: new Date(fecha_fin),
             ownerId,
         },
+            ownerId,
+        },
     });
 
     // Automatically add the owner as a member of the project
-    if (proyectoCreado && ownerId) {
+    if (newProject && ownerId) {
         await prisma.miembroProyecto.create({
             data: {
-                proyectoId: proyectoCreado.id,
+                proyectoId: newProject.id,
                 usuarioId: ownerId,
                 rol: 'owner', // Or 'admin', depending on your role structure
             },
         });
     }
 
-    return proyectoCreado;
+    return newProject;
 };
 
 exports.update = async (id, data) => {
