@@ -105,7 +105,7 @@ class ApiService {
 
   // Tareas
   async getTasks(projectId) {
-    return this.request(`/tareas/proyecto/${projectId}`)
+    return this.request(`/tareas/project/${projectId}`) // Corrected path
   }
 
   async createTask(taskData) {

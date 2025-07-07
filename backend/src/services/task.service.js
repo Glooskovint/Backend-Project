@@ -119,11 +119,73 @@ function calculateTaskAggregates(taskNode) {
   // Decidimos si sobrescribir los campos originales o usar nuevos campos para el frontend.
   // Por consistencia con el problema ("Cálculo automático de propiedades"),
   // vamos a actualizar los campos principales que el frontend ya usa.
-  taskNode.fecha_inicio = taskNode.fecha_inicio_calculada;
-  taskNode.fecha_fin = taskNode.fecha_fin_calculada;
-  taskNode.presupuesto = taskNode.presupuesto_calculado;
+  // taskNode.fecha_inicio = taskNode.fecha_inicio_calculada; // These are now just for calculation output
+  // taskNode.fecha_fin = taskNode.fecha_fin_calculada;
+  // taskNode.presupuesto = taskNode.presupuesto_calculado;
   // El campo 'asignaciones' original de la tarea sigue refiriéndose a las asignaciones directas.
   // El frontend puede usar 'equipoTotalCount' para mostrar el número total de personas involucradas.
+}
+
+// Function to recursively update parent task aggregates
+async function updateParentAggregates(taskId, tx) {
+  if (!taskId) return;
+
+  const task = await tx.tarea.findUnique({
+    where: { id: taskId },
+    include: { subtareas: true, proyecto: true }
+  });
+
+  if (!task) return;
+
+  let earliestStartDate = task.fecha_inicio ? new Date(task.fecha_inicio) : null;
+  let latestEndDate = task.fecha_fin ? new Date(task.fecha_fin) : null;
+  let cumulativeBudget = parseFloat(task.presupuesto) || 0;
+
+  if (task.subtareas && task.subtareas.length > 0) {
+    // Reset parent's own dates/budget if it's purely aggregate
+    earliestStartDate = null;
+    latestEndDate = null;
+    cumulativeBudget = 0;
+
+    for (const subtask of task.subtareas) {
+      const subtaskStartDate = subtask.fecha_inicio ? new Date(subtask.fecha_inicio) : null;
+      const subtaskEndDate = subtask.fecha_fin ? new Date(subtask.fecha_fin) : null;
+
+      if (subtaskStartDate && (!earliestStartDate || subtaskStartDate < earliestStartDate)) {
+        earliestStartDate = subtaskStartDate;
+      }
+      if (subtaskEndDate && (!latestEndDate || subtaskEndDate > latestEndDate)) {
+        latestEndDate = subtaskEndDate;
+      }
+      cumulativeBudget += parseFloat(subtask.presupuesto) || 0;
+    }
+  }
+
+  const dataToUpdate = {};
+  if (earliestStartDate && (!task.fecha_inicio || new Date(task.fecha_inicio).getTime() !== earliestStartDate.getTime())) {
+    dataToUpdate.fecha_inicio = earliestStartDate;
+  }
+  if (latestEndDate && (!task.fecha_fin || new Date(task.fecha_fin).getTime() !== latestEndDate.getTime())) {
+    dataToUpdate.fecha_fin = latestEndDate;
+  }
+  if (task.presupuesto !== cumulativeBudget) { // Check if it's a number before parseFloat
+      if (parseFloat(task.presupuesto) !== cumulativeBudget) {
+        dataToUpdate.presupuesto = cumulativeBudget;
+      }
+  }
+
+
+  if (Object.keys(dataToUpdate).length > 0) {
+    await tx.tarea.update({
+      where: { id: taskId },
+      data: dataToUpdate,
+    });
+  }
+
+  // Recursively update the next parent
+  if (task.parentId) {
+    await updateParentAggregates(task.parentId, tx);
+  }
 }
 
 
@@ -167,13 +229,21 @@ exports.create = async (data) => {
   }
 
   // Re-fetch the task with its assignments to return the complete object
-  return await prisma.tarea.findUnique({
+  const taskToReturn = await prisma.tarea.findUnique({
     where: { id: createdTask.id },
     include: {
       subtareas: true,
       asignaciones: { include: { usuario: true } }, // Include user details in assignments
     },
   });
+
+  // After creating a task, update its parent's aggregates
+  if (taskToReturn.parentId) {
+    await prisma.$transaction(async (tx) => {
+      await updateParentAggregates(taskToReturn.parentId, tx);
+    });
+  }
+  return taskToReturn;
 };
  
 exports.update = async (id, data) => {
@@ -189,15 +259,34 @@ exports.update = async (id, data) => {
 
   // Start a transaction to handle task update and assignments
   return await prisma.$transaction(async (tx) => {
+    // Fetch the task first to check for subtasks
+    const taskToUpdate = await tx.tarea.findUnique({
+      where: { id },
+      include: { subtareas: true },
+    });
+
+    if (!taskToUpdate) {
+      throw new Error('Tarea no encontrada'); // Or handle as per your error strategy
+    }
+
+    const hasSubtasks = taskToUpdate.subtareas && taskToUpdate.subtareas.length > 0;
+
+    const updateData = {
+      nombre,
+      // Only allow direct update of these fields if there are no subtasks
+      fecha_inicio: !hasSubtasks && fecha_inicio ? new Date(fecha_inicio) : undefined,
+      fecha_fin: !hasSubtasks && fecha_fin ? new Date(fecha_fin) : undefined,
+      presupuesto: !hasSubtasks && presupuesto !== undefined ? parseFloat(presupuesto) : undefined,
+      parentId: parentId !== undefined ? parseInt(parentId) : undefined, // parentId can always be updated
+      metadata: metadata !== undefined ? metadata : undefined,
+    };
+
+    // Remove undefined fields from updateData to avoid overwriting with null
+    Object.keys(updateData).forEach(key => updateData[key] === undefined && delete updateData[key]);
+
     const updatedTask = await tx.tarea.update({
     where: { id },
-    data: {
-      nombre,
-      fecha_inicio: fecha_inicio ? new Date(fecha_inicio) : undefined,
-      fecha_fin: fecha_fin ? new Date(fecha_fin) : undefined,
-      presupuesto: presupuesto !== undefined ? parseFloat(presupuesto) : undefined,
-      parentId: parentId !== undefined ? parseInt(parentId) : undefined,
-      metadata: metadata !== undefined ? metadata : undefined,
+    data: updateData,
     },
     include: {
       subtareas: true,
@@ -237,20 +326,47 @@ exports.update = async (id, data) => {
       }
     }
 
-    // Re-fetch the task with its updated assignments to return the complete object
+    // After updating the task and its assignments, update parent aggregates
+    if (updatedTask.parentId) {
+      await updateParentAggregates(updatedTask.parentId, tx);
+    } else {
+      // If the task itself is a root task and was updated (e.g., name change),
+      // we might not need to trigger aggregate updates unless its own dates/budget were changed
+      // and it has subtasks (which is handled by the initial check).
+      // However, if its parentId changed (e.g. became a root task),
+      // the old parent also needs updating.
+      if (taskToUpdate.parentId && taskToUpdate.parentId !== updatedTask.parentId) {
+         await updateParentAggregates(taskToUpdate.parentId, tx); // Update old parent
+      }
+    }
+
+    // Re-fetch the task with its updated assignments and potentially updated parent-calculated fields
     return await tx.tarea.findUnique({
-      where: { id: updatedTask.id },
+      where: { id: updatedTask.id }, // Use id directly, not updatedTask.id as it might not be defined if no direct fields were updated
       include: {
         subtareas: true,
-        asignaciones: { include: { usuario: true } }, // Include user details in assignments
+        asignaciones: { include: { usuario: true } },
       },
     });
   });
 };
 
 exports.remove = async (id) => {
-  const tarea = await prisma.tarea.findUnique({ where: { id } });
-  if (!tarea) return null;
-  await prisma.tarea.delete({ where: { id } });
-  return true;
+  return await prisma.$transaction(async (tx) => {
+    const taskToRemove = await tx.tarea.findUnique({ where: { id } });
+    if (!taskToRemove) return null;
+
+    // Store parentId before deleting
+    const parentId = taskToRemove.parentId;
+
+    await tx.asignacionTarea.deleteMany({ where: { tareaId: id } });
+    await tx.tarea.deleteMany({ where: { parentId: id } }); // Delete subtasks first if any constraint exists
+    await tx.tarea.delete({ where: { id } });
+
+    // After removing a task, update its parent's aggregates
+    if (parentId) {
+      await updateParentAggregates(parentId, tx);
+    }
+    return true;
+  });
 };

@@ -72,7 +72,10 @@ export default function ProjectView() {
       setEditData({
         titulo: currentProject.titulo,
         descripcion: currentProject.descripcion || '',
-        objetivo_general: currentProject.objetivo_general || ''
+        objetivo_general: currentProject.objetivo_general || '',
+        // Format dates for input[type="date"] which expects 'yyyy-MM-dd'
+        fecha_inicio: currentProject.fecha_inicio ? format(new Date(currentProject.fecha_inicio), 'yyyy-MM-dd') : '',
+        fecha_fin: currentProject.fecha_fin ? format(new Date(currentProject.fecha_fin), 'yyyy-MM-dd') : ''
       })
     }
   }, [currentProject])
@@ -94,9 +97,11 @@ export default function ProjectView() {
           titulo: editData.titulo,
           descripcion: editData.descripcion,
           objetivo_general: editData.objetivo_general,
+          fecha_inicio: editData.fecha_inicio,
+          fecha_fin: editData.fecha_fin,
         }
       );
-      // Optionally, you can show a success message here
+      toast.success('Proyecto actualizado con éxito');
     } catch (error) {
       console.error('Error al guardar cambios:', error)
       // Optionally, show an error message to the user
@@ -215,12 +220,50 @@ export default function ProjectView() {
                   onChange={(e) => setEditData({...editData, titulo: e.target.value})}
                   className="text-3xl font-bold bg-transparent border-b-2 border-primary-500 focus:outline-none w-full text-text-main placeholder-text-secondary"
                 />
-                <div className="flex space-x-2">
+                {/* Inputs para fechas de inicio y fin del proyecto */}
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  <div>
+                    <label htmlFor="fecha_inicio_proyecto" className="block text-sm font-medium text-text-main mb-1">
+                      Fecha de Inicio del Proyecto
+                    </label>
+                    <input
+                      id="fecha_inicio_proyecto"
+                      type="date"
+                      value={editData.fecha_inicio || ''}
+                      onChange={(e) => setEditData({...editData, fecha_inicio: e.target.value})}
+                      className="input-field dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 w-full"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="fecha_fin_proyecto" className="block text-sm font-medium text-text-main mb-1">
+                      Fecha de Fin del Proyecto
+                    </label>
+                    <input
+                      id="fecha_fin_proyecto"
+                      type="date"
+                      value={editData.fecha_fin || ''}
+                      onChange={(e) => setEditData({...editData, fecha_fin: e.target.value})}
+                      min={editData.fecha_inicio || ''}
+                      className="input-field dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 w-full"
+                    />
+                  </div>
+                </div>
+                <div className="flex space-x-2 mt-4">
                   <button onClick={handleSaveEdit} className="btn-primary text-sm"> {/* btn-primary */}
                     Guardar
                   </button>
                   <button 
-                    onClick={() => setIsEditing(false)} 
+                    onClick={() => {
+                      setIsEditing(false);
+                      // Reset editData to currentProject values if canceling
+                      setEditData({
+                        titulo: currentProject.titulo,
+                        descripcion: currentProject.descripcion || '',
+                        objetivo_general: currentProject.objetivo_general || '',
+                        fecha_inicio: currentProject.fecha_inicio ? format(new Date(currentProject.fecha_inicio), 'yyyy-MM-dd') : '',
+                        fecha_fin: currentProject.fecha_fin ? format(new Date(currentProject.fecha_fin), 'yyyy-MM-dd') : ''
+                      });
+                    }}
                     className="btn-secondary text-sm" // btn-secondary
                   >
                     Cancelar

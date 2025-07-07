@@ -74,6 +74,16 @@ export default function TaskForm({ projectId, task, onClose }) {
     !task || t.id !== task.id // No puede ser padre de sí misma
   )
 
+  // Determine if the task being edited is a parent task
+  // Check 1: Does the task object itself have a populated 'subtareas' array?
+  let isParentTask = task && task.subtareas && task.subtareas.length > 0;
+  // Check 2: If not, or if 'subtareas' might not be populated on the task prop directly,
+  // check the main tasks list from the store.
+  if (task && !isParentTask) {
+    isParentTask = tasks.some(t => t.parentId === task.id);
+  }
+
+
   return (
     // Overlay
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -171,8 +181,10 @@ export default function TaskForm({ projectId, task, onClose }) {
                   required
                   value={formData.fecha_inicio}
                   onChange={handleChange}
-                  className="input-field pl-10 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+                  className={`input-field pl-10 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${isParentTask ? 'disabled:opacity-50' : ''}`}
+                  disabled={isParentTask}
                 />
+                {isParentTask && <p className="text-xs text-text-secondary mt-1">Calculada desde subtareas.</p>}
               </div>
             </div>
 
@@ -191,8 +203,10 @@ export default function TaskForm({ projectId, task, onClose }) {
                   value={formData.fecha_fin}
                   onChange={handleChange}
                   min={formData.fecha_inicio}
-                  className="input-field pl-10 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+                  className={`input-field pl-10 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${isParentTask ? 'disabled:opacity-50' : ''}`}
+                  disabled={isParentTask}
                 />
+                {isParentTask && <p className="text-xs text-text-secondary mt-1">Calculada desde subtareas.</p>}
               </div>
             </div>
           </div>
@@ -212,9 +226,11 @@ export default function TaskForm({ projectId, task, onClose }) {
                 step="0.01"
                 value={formData.presupuesto}
                 onChange={handleChange}
-                className="input-field pl-10 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-600"
+                className={`input-field pl-10 dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400 dark:border-gray-600 ${isParentTask ? 'disabled:opacity-50' : ''}`}
                 placeholder="0.00"
+                disabled={isParentTask}
               />
+              {isParentTask && <p className="text-xs text-text-secondary mt-1">Calculado desde subtareas.</p>}
             </div>
           </div>
 

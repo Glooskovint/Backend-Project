@@ -51,9 +51,26 @@ exports.create = async (data) => {
 };
 
 exports.update = async (id, data) => {
+    const { fecha_inicio, fecha_fin, ...restData } = data;
+    const updateData = { ...restData };
+
+    if (fecha_inicio) {
+        updateData.fecha_inicio = new Date(fecha_inicio);
+    }
+    if (fecha_fin) {
+        updateData.fecha_fin = new Date(fecha_fin);
+    }
+
     return await prisma.proyecto.update({
         where: { id },
-        data,
+        data: updateData,
+        include: { // Ensure owner is returned for consistency, as in getById
+            owner: {
+                select: {
+                    nombre: true
+                }
+            }
+        }
     });
 };
 

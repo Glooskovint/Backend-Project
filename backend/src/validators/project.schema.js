@@ -20,4 +20,5 @@ const joinProjectSchema = z.object({
 module.exports = {
   createProjectSchema,
   joinProjectSchema,
+  updateProjectSchema: createProjectSchema.partial(), // All fields optional for update
 };
