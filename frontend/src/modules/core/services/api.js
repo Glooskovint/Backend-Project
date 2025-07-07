@@ -23,6 +23,11 @@ class ApiService {
       throw new Error(error.error || `HTTP error! status: ${response.status}`)
     }
 
+    // Si la respuesta es 204 No Content, no hay cuerpo para parsear
+    if (response.status === 204) {
+      return null;
+    }
+
     return response.json()
   }
   

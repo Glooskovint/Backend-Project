@@ -48,6 +48,10 @@ app.use('/tareas', taskRoutes);
 app.use('/asignaciones', asignacionRoutes);
 app.use('/objetivos', objectiveRoutes);
 
+// Middleware de manejo de errores (debe ser el último middleware)
+const errorHandler = require('./middlewares/errorHandler');
+app.use(errorHandler);
+
 // Crear servidor HTTP
 const server = http.createServer(app);
 

@@ -31,6 +31,7 @@ import Gantt from '../components/Gantt'
 import EDT from '../components/EDT'
 import Presupuesto from '../components/Presupuesto'
 import ProjectExportPDF from '../components/ProjectExportPDF' // Importar el componente de exportación
+import toast from 'react-hot-toast'; // Importar toast
 
 export default function ProjectView() {
   const { id } = useParams()
@@ -104,15 +105,16 @@ export default function ProjectView() {
 
   const handleDeleteProject = async () => {
     if (!currentProject) return;
+    setShowDeleteConfirm(false); // Cerrar el diálogo primero
+    setIsEditing(false); // Salir del modo edición si está activo
     try {
       await deleteProject(currentProject.id);
-      navigate('/'); // Redirigir a la lista de proyectos o a la página de inicio
-      // Opcionalmente, mostrar un mensaje de éxito
+      toast.success('Proyecto eliminado con éxito'); // Usar toast para feedback
+      navigate('/'); // Redirigir a la página de inicio
     } catch (error) {
       console.error('Error al eliminar el proyecto:', error);
-      // Opcionalmente, mostrar un mensaje de error
+      toast.error(`Error al eliminar el proyecto: ${error.message}`); // Mostrar error con toast
     }
-    setShowDeleteConfirm(false); // Cerrar el diálogo de confirmación
   };
 
   const handleShowGantt = () => {
