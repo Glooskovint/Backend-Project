@@ -66,6 +66,15 @@ function App() {
           />
         </Routes>
       </main>
+      <a
+        href="https://forms.office.com/Pages/ResponsePage.aspx?id=4AC6SC4AsEy1AQc4XTTsNNP5gCwQGvRCrSPT9K_5iI9UQVQwTUtZQVhYNDIzWTNFOEpJNlMzRkFGRy4u"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-lg transition duration-300 ease-in-out"
+        title="Encuesta de Satisfacción"
+      >
+        Encuesta
+      </a>
     </div>
   )
 }
