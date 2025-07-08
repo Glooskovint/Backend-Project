@@ -8,7 +8,8 @@ class SocketService {
 
   connect() {
     if (!this.socket) {
-      this.socket = io(import.meta.env.VITE_API_URL, {
+      this.socket = io({ // Conéctate al origen desde donde se sirve el frontend
+        // El path por defecto de Socket.IO es '/socket.io/', Nginx lo manejará.
         transports: ['websocket', 'polling']
       })
 
