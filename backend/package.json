@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "postinstall": "prisma generate"
   },
   "keywords": [],
@@ -19,5 +19,9 @@
     "prisma": "^6.8.2",
     "socket.io": "^4.8.1",
     "zod": "^3.25.64"
+  },
+  "devDependencies": {
+    "jest": "^30.0.4",
+    "supertest": "^7.1.3"
   }
 }
