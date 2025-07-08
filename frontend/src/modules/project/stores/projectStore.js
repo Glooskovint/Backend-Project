@@ -187,16 +187,45 @@ export const useProjectStore = create((set, get) => ({
       const { token } = await api.getInviteLink(projectId)
       const inviteUrl = `${window.location.origin}/join/${token}`
 
-      // Copiar al portapapeles
-      await navigator.clipboard.writeText(inviteUrl)
-      toast.success('Enlace de invitación copiado al portapapeles')
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        try {
+          await navigator.clipboard.writeText(inviteUrl)
+          toast.success('Enlace de invitación copiado al portapapeles')
+        } catch (err) {
+          console.warn('Error al copiar al portapapeles, mostrando modal:', err)
+          // Fallback a modal si writeText falla por alguna razón (ej. permisos denegados)
+          get().showInviteLinkModal(inviteUrl)
+        }
+      } else {
+        // Fallback a modal si la API de Clipboard no está disponible
+        console.warn('API de Clipboard no disponible, mostrando modal.')
+        get().showInviteLinkModal(inviteUrl)
+      }
 
       return inviteUrl
     } catch (error) {
       console.error('Error al obtener enlace de invitación:', error)
-      toast.error('Error al generar enlace de invitación')
+      // No mostrar toast aquí, se maneja en el modal o con el copiado exitoso.
+      // Si la API falla, el error se propaga y se puede manejar en el componente que llama.
       throw error
     }
+  },
+
+  // Esta función se llamará desde getInviteLink como fallback.
+  // Deberás crear un estado en tu store para manejar la visibilidad del modal y el enlace.
+  // Ejemplo de estado: inviteLinkModal: { isOpen: false, link: '' }
+  // Y acciones para abrir/cerrar el modal.
+  showInviteLinkModal: (link) => {
+    // Aquí deberías actualizar el estado para mostrar un modal.
+    // Este es un placeholder, necesitarás implementar la lógica del modal.
+    // Por ejemplo, usando el store de Zustand:
+    // set({ inviteLinkModal: { isOpen: true, link } });
+    // O podrías emitir un evento que un componente escuche para mostrar el modal.
+
+    // Temporalmente, usamos un prompt como placeholder para el modal.
+    // Reemplaza esto con tu implementación de modal real.
+    window.prompt('Copia este enlace de invitación:', link)
+    toast.info('Copia el enlace de invitación manualmente.')
   },
 
   joinProject: async (token, userId) => {
