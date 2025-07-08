@@ -1,0 +1,23 @@
+# Usar una imagen de PostgreSQL para tener pg_dump y cliente psql, y Debian para cron
+FROM postgres:15-bookworm
+
+# Instalar cron y otras utilidades
+RUN apt-get update && apt-get install -y cron rsyslog && rm -rf /var/lib/apt/lists/*
+
+# Copiar el script de backup al contenedor
+COPY backup.sh /usr/local/bin/backup.sh
+RUN chmod +x /usr/local/bin/backup.sh
+
+# Crear el archivo de crontab
+RUN echo "0 2 * * 0 /usr/local/bin/backup.sh >> /var/log/cron.log 2>&1" > /etc/cron.d/backup-cron
+# Dar permisos de ejecución al crontab
+RUN chmod 0644 /etc/cron.d/backup-cron
+# Aplicar el crontab
+RUN crontab /etc/cron.d/backup-cron
+
+# Crear el archivo de log de cron y darle permisos
+RUN touch /var/log/cron.log
+RUN chmod 0644 /var/log/cron.log
+
+# Comando para iniciar cron en primer plano y rsyslog para capturar logs
+CMD sh -c 'rsyslogd && cron -f'
