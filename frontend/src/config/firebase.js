@@ -2,14 +2,14 @@ import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "demo-api-key",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "demo-project.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "demo-project",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "demo-project.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "123456789",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:123456789:web:abcdef",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
-}
+  apiKey: "AIzaSyBXZ6tZltXhBhOAl_KzsB5hLS4DiYivNmw",
+  authDomain: "capstoneproject-34783.firebaseapp.com",
+  projectId: "capstoneproject-34783",
+  storageBucket: "capstoneproject-34783.firebasestorage.app",
+  messagingSenderId: "1037841123912",
+  appId: "1:1037841123912:web:cde01a430f805f8b8fa67d",
+  measurementId: "G-81YZX3CMK3"
+};
 
 const app = initializeApp(firebaseConfig)
 export const auth = getAuth(app)
